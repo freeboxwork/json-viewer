@@ -643,7 +643,7 @@ body.fixed-layout .status-bar {
     font-size: 0.78rem;
     flex-wrap: wrap;
     flex-shrink: 0;
-    flex-shrink: 0;
+    position: relative;
 }
 
 .node-detail.visible {
@@ -686,6 +686,34 @@ body.fixed-layout .status-bar {
 }
 
 .node-detail-copy:hover {
+    color: var(--accent);
+    background: var(--accent-glow);
+    border-color: var(--accent);
+}
+
+.node-detail-close {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--text-muted);
+    background: none;
+    border: 1px solid var(--border-color);
+    font-size: 1rem;
+    line-height: 1;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-family: inherit;
+    transition: all var(--transition);
+    padding: 0;
+}
+
+.node-detail-close:hover {
     color: var(--accent);
     background: var(--accent-glow);
     border-color: var(--accent);

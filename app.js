@@ -179,7 +179,7 @@ function syntaxHighlight(json) {
 }
 
 // ===== Tree View Builder =====
-function buildTreeHTML(data, path = '$', isLast = true) {
+function buildTreeHTML(data, path = '$', isLast = true, keyHtml = '') {
     if (data === null) {
         return `<span class="tree-null" data-path="${path}">null</span>`;
     }
@@ -202,30 +202,48 @@ function buildTreeHTML(data, path = '$', isLast = true) {
     const id = 'node-' + Math.random().toString(36).substr(2, 9);
 
     if (count === 0) {
-        return `<span class="tree-type-badge">${typeBadge}</span><span class="tree-bracket">${isArray ? '[]' : '{}'}</span>`;
+        return `<span class="tree-type-badge">${typeBadge}</span>${keyHtml}<span class="tree-bracket">${isArray ? '[]' : '{}'}</span>`;
     }
 
-    let html = '';
-    html += `<span class="tree-toggle" onclick="toggleTreeNode('${id}')" id="toggle-${id}">\u2212</span>`;
-    html += `<span class="tree-type-badge">${typeBadge}</span>`;
-    html += `<span class="tree-count" style="display:none;">${count} ${isArray ? 'items' : 'keys'}</span>`;
-    html += `<div class="tree-node" id="${id}">`;
+    const toggleHtml = `<span class="tree-toggle" onclick="toggleTreeNode('${id}')" id="toggle-${id}">\u2212</span>`;
+    const badgeHtml = `<span class="tree-type-badge">${typeBadge}</span>`;
+    const countHtml = `<span class="tree-count" style="display:none;">${count} ${isArray ? 'items' : 'keys'}</span>`;
+
+    let html = `<div class="tree-node" id="${id}">`;
 
     entries.forEach(([key, value], idx) => {
         const childPath = isArray ? `${path}[${key}]` : `${path}.${key}`;
         const escapedPath = childPath.replace(/'/g, "\\'");
+        const isObj = value !== null && typeof value === 'object';
+
         html += `<div class="tree-line" data-path="${childPath}">`;
-        if (!isArray) {
-            html += `<span class="tree-key" data-path="${childPath}" onclick="event.stopPropagation();copyPath('${escapedPath}')" title="Click to copy path">${key}</span><span class="tree-colon">:</span> `;
+
+        if (isObj) {
+            // For object/array children: pass key as keyHtml so it appears as toggle → badge → key → count
+            let childKeyHtml;
+            if (!isArray) {
+                childKeyHtml = `<span class="tree-key" data-path="${childPath}" onclick="event.stopPropagation();copyPath('${escapedPath}')" title="Click to copy path">${key}</span>`;
+            } else {
+                childKeyHtml = `<span class="tree-key" data-path="${childPath}" onclick="event.stopPropagation();copyPath('${escapedPath}')" title="Click to copy path" style="color:var(--text-muted);font-size:0.78rem;">${key}</span>`;
+            }
+            html += buildTreeHTML(value, childPath, idx === count - 1, childKeyHtml);
         } else {
-            html += `<span class="tree-key" data-path="${childPath}" onclick="event.stopPropagation();copyPath('${escapedPath}')" title="Click to copy path" style="color:var(--text-muted);font-size:0.78rem;">${key}</span><span class="tree-colon">:</span> `;
+            // Primitives: key : value
+            if (!isArray) {
+                html += `<span class="tree-key" data-path="${childPath}" onclick="event.stopPropagation();copyPath('${escapedPath}')" title="Click to copy path">${key}</span><span class="tree-colon">:</span>`;
+            } else {
+                html += `<span class="tree-key" data-path="${childPath}" onclick="event.stopPropagation();copyPath('${escapedPath}')" title="Click to copy path" style="color:var(--text-muted);font-size:0.78rem;">${key}</span><span class="tree-colon">:</span>`;
+            }
+            html += buildTreeHTML(value, childPath, idx === count - 1);
         }
-        html += buildTreeHTML(value, childPath, idx === count - 1);
+
         html += '</div>';
     });
 
     html += `</div>`;
-    return html;
+
+    // Order: toggle → badge → key → count → children
+    return toggleHtml + badgeHtml + keyHtml + countHtml + html;
 }
 
 function toggleTreeNode(id) {
@@ -235,9 +253,10 @@ function toggleTreeNode(id) {
     const collapsed = node.style.display === 'none';
     node.style.display = collapsed ? '' : 'none';
     toggle.textContent = collapsed ? '\u2212' : '+';
-    // show/hide count
-    const count = toggle.nextElementSibling?.nextElementSibling;
-    if (count && count.classList.contains('tree-count')) {
+    // show/hide count — find by class within the same parent tree-line
+    const parent = toggle.parentElement;
+    const count = parent ? parent.querySelector(':scope > .tree-count') : null;
+    if (count) {
         count.style.display = collapsed ? 'none' : '';
     }
 }
@@ -307,6 +326,12 @@ function copyDetail(what) {
     if (el && el.textContent) {
         copyToClipboard(el.textContent);
     }
+}
+
+function clearTreeSelection() {
+    document.querySelectorAll('.tree-line.selected').forEach(el => el.classList.remove('selected'));
+    const panel = document.getElementById('nodeDetail');
+    if (panel) panel.classList.remove('visible');
 }
 
 function setupTreeClickHandler(containerId) {

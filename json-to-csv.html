@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to CSV Converter Online - Free JSON to CSV Tool</title>
+    <meta name="description" content="Convert JSON arrays to CSV format online for free. Preview as table, choose delimiters, and download CSV files instantly.">
+    <meta property="og:title" content="JSON to CSV Converter Online">
+    <meta property="og:description" content="Convert JSON arrays to CSV format with table preview and download.">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <script src="app.js"></script>
+    <script>document.write(getNavHTML('to-csv'));</script>
+
+    <main>
+        <div class="page-header">
+            <h1>JSON to CSV Converter</h1>
+            <p>Convert JSON arrays to CSV format with table preview and download</p>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="convertToCSV()">&#128260; Convert to CSV</button>
+            <div class="toolbar-separator"></div>
+            <div class="option-group">
+                <label>Delimiter:</label>
+                <select class="select" id="delimiter">
+                    <option value="," selected>Comma (,)</option>
+                    <option value="&#9;">Tab</option>
+                    <option value=";">Semicolon (;)</option>
+                    <option value="|">Pipe (|)</option>
+                </select>
+            </div>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                <input type="checkbox" id="includeHeader" checked style="accent-color:var(--accent);">
+                <span style="font-size:0.82rem;color:var(--text-secondary);">Include Header</span>
+            </label>
+            <div class="toolbar-separator"></div>
+            <button class="btn btn-secondary btn-sm" onclick="copyCSV()">&#128203; Copy</button>
+            <button class="btn btn-secondary btn-sm" onclick="downloadCSV()">&#11015; Download</button>
+            <button class="btn btn-danger btn-sm" onclick="clearCSV()">&#128465; Clear</button>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-icon">&#128194;</div>
+            <div class="drop-text">Drop a JSON file here or <span>click to upload</span></div>
+        </div>
+
+        <div class="editor-layout">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">JSON Input (Array)</span>
+                    <button class="btn btn-secondary btn-sm" onclick="loadSampleCSV()">Sample</button>
+                </div>
+                <textarea class="editor-area" id="jsonInput" placeholder='Paste a JSON array here...\n\nExample:\n[\n  {"name": "John", "age": 30},\n  {"name": "Jane", "age": 25}\n]' spellcheck="false"></textarea>
+            </div>
+
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">CSV Output</span>
+                </div>
+                <textarea class="editor-area" id="csvOutput" placeholder="CSV output will appear here..." spellcheck="false" readonly style="cursor:default;"></textarea>
+            </div>
+        </div>
+
+        <!-- Table Preview -->
+        <div id="tablePreview" style="display:none;margin-top:16px;">
+            <div class="panel-header" style="border-radius:var(--radius) var(--radius) 0 0;">
+                <span class="panel-title">Table Preview</span>
+                <span style="font-size:0.75rem;color:var(--text-muted);" id="rowCount"></span>
+            </div>
+            <div style="overflow-x:auto;border:1px solid var(--border-color);border-top:none;border-radius:0 0 var(--radius) var(--radius);">
+                <table class="data-table" id="previewTable"></table>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot neutral" id="statusDot"></div>
+                <span id="statusText">Ready</span>
+            </div>
+        </div>
+    </main>
+
+    <script>document.write(getFooterHTML());</script>
+
+    <script>
+        const input = document.getElementById('jsonInput');
+        const csvOutput = document.getElementById('csvOutput');
+        let csvText = '';
+
+        setupDropZone(document.getElementById('dropZone'), input, () => convertToCSV());
+
+        function convertToCSV() {
+            const text = input.value.trim();
+            if (!text) { setStatus('Please enter JSON', 'invalid'); return; }
+
+            const result = parseJSON(text);
+            if (!result.success) { setStatus(`Error: ${result.error.message}`, 'invalid'); return; }
+
+            let data = result.data;
+            if (!Array.isArray(data)) {
+                // Try to find an array in the object
+                const arrays = Object.values(data).filter(v => Array.isArray(v));
+                if (arrays.length > 0) {
+                    data = arrays[0];
+                    showToast('Found array in object, using first array property');
+                } else {
+                    data = [data]; // wrap single object
+                }
+            }
+
+            if (data.length === 0) { setStatus('Empty array', 'invalid'); return; }
+
+            // Flatten nested objects
+            const flattened = data.map(item => flattenObject(item));
+
+            const delimiter = document.getElementById('delimiter').value;
+            const includeHeader = document.getElementById('includeHeader').checked;
+
+            csvText = Papa.unparse(flattened, {
+                delimiter: delimiter,
+                header: includeHeader
+            });
+
+            csvOutput.value = csvText;
+
+            // Table preview
+            renderTable(flattened);
+
+            setStatus(`Converted ${flattened.length} rows successfully`, 'valid');
+        }
+
+        function flattenObject(obj, prefix = '') {
+            const result = {};
+            for (const [key, value] of Object.entries(obj)) {
+                const newKey = prefix ? `${prefix}.${key}` : key;
+                if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+                    Object.assign(result, flattenObject(value, newKey));
+                } else if (Array.isArray(value)) {
+                    result[newKey] = JSON.stringify(value);
+                } else {
+                    result[newKey] = value;
+                }
+            }
+            return result;
+        }
+
+        function renderTable(data) {
+            if (data.length === 0) return;
+            const headers = Object.keys(data[0]);
+            const maxRows = Math.min(data.length, 100);
+
+            let html = '<thead><tr>';
+            headers.forEach(h => { html += `<th>${h}</th>`; });
+            html += '</tr></thead><tbody>';
+
+            for (let i = 0; i < maxRows; i++) {
+                html += '<tr>';
+                headers.forEach(h => {
+                    const val = data[i][h];
+                    html += `<td>${val === null || val === undefined ? '' : String(val).replace(/</g, '&lt;')}</td>`;
+                });
+                html += '</tr>';
+            }
+            html += '</tbody>';
+
+            document.getElementById('previewTable').innerHTML = html;
+            document.getElementById('tablePreview').style.display = '';
+            document.getElementById('rowCount').textContent = `${data.length} rows${data.length > 100 ? ' (showing first 100)' : ''}`;
+        }
+
+        function loadSampleCSV() {
+            input.value = JSON.stringify([
+                { "id": 1, "name": "Alice", "age": 28, "city": "Seoul", "active": true },
+                { "id": 2, "name": "Bob", "age": 35, "city": "Busan", "active": false },
+                { "id": 3, "name": "Charlie", "age": 22, "city": "Incheon", "active": true },
+                { "id": 4, "name": "Diana", "age": 31, "city": "Daegu", "active": true },
+                { "id": 5, "name": "Eve", "age": 29, "city": "Gwangju", "active": false }
+            ], null, 2);
+            convertToCSV();
+        }
+
+        function copyCSV() {
+            if (!csvText) { showToast('Nothing to copy', 'error'); return; }
+            copyToClipboard(csvText);
+        }
+
+        function downloadCSV() {
+            if (!csvText) { showToast('Nothing to download', 'error'); return; }
+            downloadFile(csvText, 'data.csv', 'text/csv');
+        }
+
+        function clearCSV() {
+            input.value = '';
+            csvOutput.value = '';
+            csvText = '';
+            document.getElementById('tablePreview').style.display = 'none';
+            setStatus('Ready', 'neutral');
+        }
+
+        function setStatus(text, type) {
+            document.getElementById('statusText').textContent = text;
+            document.getElementById('statusDot').className = 'status-dot ' + type;
+        }
+    </script>
+</body>
+</html>

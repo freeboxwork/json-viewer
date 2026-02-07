@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to YAML Converter Online - Free JSON to YAML Tool</title>
+    <meta name="description" content="Convert JSON to YAML format online for free. Clean, readable YAML output with syntax highlighting. No server needed.">
+    <meta property="og:title" content="JSON to YAML Converter Online">
+    <meta property="og:description" content="Convert JSON to clean, readable YAML format instantly.">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+</head>
+<body>
+    <script src="app.js"></script>
+    <script>document.write(getNavHTML('to-yaml'));</script>
+
+    <main>
+        <div class="page-header">
+            <h1>JSON to YAML Converter</h1>
+            <p>Convert JSON data to clean, human-readable YAML format</p>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="convertToYAML()">&#128260; Convert to YAML</button>
+            <div class="toolbar-separator"></div>
+            <div class="option-group">
+                <label>Indent:</label>
+                <select class="select" id="yamlIndent">
+                    <option value="2" selected>2 Spaces</option>
+                    <option value="4">4 Spaces</option>
+                </select>
+            </div>
+            <div class="toolbar-separator"></div>
+            <button class="btn btn-secondary btn-sm" onclick="loadSample()">Sample</button>
+            <button class="btn btn-secondary btn-sm" onclick="copyYAML()">&#128203; Copy</button>
+            <button class="btn btn-secondary btn-sm" onclick="downloadYAML()">&#11015; Download</button>
+            <button class="btn btn-danger btn-sm" onclick="clearAll()">&#128465; Clear</button>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-icon">&#128194;</div>
+            <div class="drop-text">Drop a JSON file here or <span>click to upload</span></div>
+        </div>
+
+        <div class="editor-layout">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">JSON Input</span>
+                </div>
+                <textarea class="editor-area" id="jsonInput" placeholder="Paste your JSON here..." spellcheck="false"></textarea>
+            </div>
+
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">YAML Output</span>
+                </div>
+                <div class="output-area" id="yamlOutput">
+                    <div style="color:var(--text-muted);text-align:center;padding-top:120px;">
+                        <div style="font-size:3rem;margin-bottom:12px;">---</div>
+                        <p>YAML output will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot neutral" id="statusDot"></div>
+                <span id="statusText">Ready</span>
+            </div>
+        </div>
+    </main>
+
+    <script>document.write(getFooterHTML());</script>
+
+    <script>
+        const input = document.getElementById('jsonInput');
+        const yamlOutput = document.getElementById('yamlOutput');
+        let yamlText = '';
+
+        setupDropZone(document.getElementById('dropZone'), input, () => convertToYAML());
+
+        function convertToYAML() {
+            const text = input.value.trim();
+            if (!text) { setStatus('Please enter JSON', 'invalid'); return; }
+
+            const result = parseJSON(text);
+            if (!result.success) { setStatus(`Error: ${result.error.message}`, 'invalid'); return; }
+
+            const indent = parseInt(document.getElementById('yamlIndent').value);
+            yamlText = jsyaml.dump(result.data, {
+                indent: indent,
+                lineWidth: -1,
+                noRefs: true,
+                sortKeys: false
+            });
+
+            // Syntax highlight YAML
+            const highlighted = yamlText
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .split('\n')
+                .map(line => {
+                    // Comments
+                    if (/^\s*#/.test(line)) return `<span style="color:var(--text-muted);">${line}</span>`;
+                    // Key: value
+                    return line.replace(/^(\s*)([\w.-]+)(:)/gm, (m, sp, key, colon) => {
+                        return `${sp}<span style="color:var(--json-key);">${key}</span><span style="color:var(--json-bracket);">${colon}</span>`;
+                    })
+                    .replace(/(true|false)/g, '<span style="color:var(--json-boolean);">$1</span>')
+                    .replace(/\bnull\b/g, '<span style="color:var(--json-null);">null</span>')
+                    .replace(/:\s+(\d+\.?\d*)\s*$/gm, ': <span style="color:var(--json-number);">$1</span>')
+                    .replace(/'([^']*)'/g, '<span style="color:var(--json-string);">\'$1\'</span>');
+                })
+                .join('\n');
+
+            yamlOutput.innerHTML = `<div class="code-view">${highlighted}</div>`;
+            setStatus(`Converted to YAML (${formatBytes(new Blob([yamlText]).size)})`, 'valid');
+        }
+
+        function loadSample() {
+            input.value = JSON.stringify({
+                "apiVersion": "v1",
+                "kind": "Service",
+                "metadata": {
+                    "name": "my-service",
+                    "namespace": "default",
+                    "labels": { "app": "web", "tier": "frontend" }
+                },
+                "spec": {
+                    "type": "LoadBalancer",
+                    "ports": [
+                        { "port": 80, "targetPort": 8080, "protocol": "TCP" }
+                    ],
+                    "selector": { "app": "web" }
+                }
+            }, null, 2);
+            convertToYAML();
+        }
+
+        function copyYAML() {
+            if (!yamlText) { showToast('Nothing to copy', 'error'); return; }
+            copyToClipboard(yamlText);
+        }
+
+        function downloadYAML() {
+            if (!yamlText) { showToast('Nothing to download', 'error'); return; }
+            downloadFile(yamlText, 'data.yaml', 'text/yaml');
+        }
+
+        function clearAll() {
+            input.value = '';
+            yamlOutput.innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:120px;"><div style="font-size:3rem;margin-bottom:12px;">---</div><p>YAML output will appear here</p></div>`;
+            yamlText = '';
+            setStatus('Ready', 'neutral');
+        }
+
+        function setStatus(text, type) {
+            document.getElementById('statusText').textContent = text;
+            document.getElementById('statusDot').className = 'status-dot ' + type;
+        }
+    </script>
+</body>
+</html>

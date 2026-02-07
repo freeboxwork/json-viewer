@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Diff Online - Compare Two JSON Objects</title>
+    <meta name="description" content="Compare two JSON objects online for free. See differences highlighted with added, removed, and changed values. Deep recursive comparison.">
+    <meta property="og:title" content="JSON Diff - Compare Two JSON Objects">
+    <meta property="og:description" content="Compare two JSON objects and see differences highlighted side by side.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <script src="app.js"></script>
+    <script>document.write(getNavHTML('diff'));</script>
+
+    <main>
+        <div class="page-header">
+            <h1>JSON Diff / Compare</h1>
+            <p>Compare two JSON objects and see differences highlighted</p>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="compareJSON()">&#128269; Compare</button>
+            <button class="btn btn-secondary" onclick="swapInputs()">&#8646; Swap</button>
+            <div class="toolbar-separator"></div>
+            <button class="btn btn-secondary btn-sm" onclick="loadSample()">Sample</button>
+            <button class="btn btn-danger btn-sm" onclick="clearAll()">&#128465; Clear</button>
+        </div>
+
+        <!-- Two input panels -->
+        <div class="editor-layout">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Original JSON (Left)</span>
+                </div>
+                <textarea class="editor-area" id="jsonLeft" placeholder="Paste original JSON here..." spellcheck="false"></textarea>
+            </div>
+
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Modified JSON (Right)</span>
+                </div>
+                <textarea class="editor-area" id="jsonRight" placeholder="Paste modified JSON here..." spellcheck="false"></textarea>
+            </div>
+        </div>
+
+        <!-- Diff Stats -->
+        <div id="diffStats" style="display:none;margin-top:16px;">
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                <div class="card" style="padding:14px 20px;text-align:center;flex:1;min-width:120px;">
+                    <div style="font-size:1.5rem;font-weight:800;color:var(--success);" id="addedCount">0</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">Added</div>
+                </div>
+                <div class="card" style="padding:14px 20px;text-align:center;flex:1;min-width:120px;">
+                    <div style="font-size:1.5rem;font-weight:800;color:var(--error);" id="removedCount">0</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">Removed</div>
+                </div>
+                <div class="card" style="padding:14px 20px;text-align:center;flex:1;min-width:120px;">
+                    <div style="font-size:1.5rem;font-weight:800;color:var(--warning);" id="changedCount">0</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">Changed</div>
+                </div>
+                <div class="card" style="padding:14px 20px;text-align:center;flex:1;min-width:120px;">
+                    <div style="font-size:1.5rem;font-weight:800;color:var(--accent);" id="totalDiffs">0</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">Total Differences</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diff Results -->
+        <div id="diffResults" style="display:none;margin-top:16px;">
+            <div class="panel-header" style="border-radius:var(--radius) var(--radius) 0 0;">
+                <span class="panel-title">Differences</span>
+                <div class="panel-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="filterDiffs('all')" id="filterAll" style="border-color:var(--accent);">All</button>
+                    <button class="btn btn-secondary btn-sm" onclick="filterDiffs('added')" id="filterAdded">Added</button>
+                    <button class="btn btn-secondary btn-sm" onclick="filterDiffs('removed')" id="filterRemoved">Removed</button>
+                    <button class="btn btn-secondary btn-sm" onclick="filterDiffs('changed')" id="filterChanged">Changed</button>
+                </div>
+            </div>
+            <div style="border:1px solid var(--border-color);border-top:none;border-radius:0 0 var(--radius) var(--radius);overflow:auto;max-height:500px;" id="diffList"></div>
+        </div>
+
+        <!-- No differences -->
+        <div id="noDiff" style="display:none;margin-top:16px;">
+            <div class="card" style="text-align:center;padding:40px;">
+                <div style="font-size:3rem;margin-bottom:12px;">&#10003;</div>
+                <h3 style="color:var(--success);margin-bottom:8px;">No Differences Found</h3>
+                <p style="color:var(--text-muted);">Both JSON objects are identical</p>
+            </div>
+        </div>
+
+        <div class="status-bar" style="margin-top:12px;">
+            <div class="status-item">
+                <div class="status-dot neutral" id="statusDot"></div>
+                <span id="statusText">Ready</span>
+            </div>
+        </div>
+    </main>
+
+    <script>document.write(getFooterHTML());</script>
+
+    <script>
+        const leftInput = document.getElementById('jsonLeft');
+        const rightInput = document.getElementById('jsonRight');
+        let allDiffs = [];
+
+        function compareJSON() {
+            const leftText = leftInput.value.trim();
+            const rightText = rightInput.value.trim();
+
+            if (!leftText || !rightText) {
+                setStatus('Please enter JSON in both panels', 'invalid');
+                return;
+            }
+
+            const leftResult = parseJSON(leftText);
+            if (!leftResult.success) {
+                setStatus(`Left JSON error: ${leftResult.error.message}`, 'invalid');
+                return;
+            }
+
+            const rightResult = parseJSON(rightText);
+            if (!rightResult.success) {
+                setStatus(`Right JSON error: ${rightResult.error.message}`, 'invalid');
+                return;
+            }
+
+            allDiffs = jsonDiff(leftResult.data, rightResult.data);
+
+            const added = allDiffs.filter(d => d.type === 'added').length;
+            const removed = allDiffs.filter(d => d.type === 'removed').length;
+            const changed = allDiffs.filter(d => d.type === 'changed').length;
+
+            document.getElementById('addedCount').textContent = added;
+            document.getElementById('removedCount').textContent = removed;
+            document.getElementById('changedCount').textContent = changed;
+            document.getElementById('totalDiffs').textContent = allDiffs.length;
+
+            if (allDiffs.length === 0) {
+                document.getElementById('diffStats').style.display = 'none';
+                document.getElementById('diffResults').style.display = 'none';
+                document.getElementById('noDiff').style.display = '';
+                setStatus('No differences found', 'valid');
+            } else {
+                document.getElementById('diffStats').style.display = '';
+                document.getElementById('diffResults').style.display = '';
+                document.getElementById('noDiff').style.display = 'none';
+                renderDiffs(allDiffs);
+                setStatus(`Found ${allDiffs.length} difference(s)`, 'invalid');
+            }
+        }
+
+        function renderDiffs(diffs) {
+            const list = document.getElementById('diffList');
+            if (diffs.length === 0) {
+                list.innerHTML = `<div style="padding:32px;text-align:center;color:var(--text-muted);">No items to show</div>`;
+                return;
+            }
+
+            let html = '';
+            diffs.forEach(d => {
+                const cls = `diff-${d.type}`;
+                const icon = d.type === 'added' ? '+' : d.type === 'removed' ? '-' : '~';
+                const label = d.type.charAt(0).toUpperCase() + d.type.slice(1);
+
+                html += `<div class="${cls}" style="padding:10px 16px;border-bottom:1px solid var(--border-color);font-family:monospace;font-size:0.85rem;" data-type="${d.type}">`;
+                html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">`;
+                html += `<span style="font-weight:700;">${icon} ${d.path}</span>`;
+                html += `<span style="font-size:0.75rem;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,0.06);">${label}</span>`;
+                html += `</div>`;
+
+                if (d.type === 'changed') {
+                    html += `<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:0.82rem;">`;
+                    html += `<span style="color:var(--error);">- ${formatValue(d.oldValue)}</span>`;
+                    html += `<span style="color:var(--success);">+ ${formatValue(d.newValue)}</span>`;
+                    html += `</div>`;
+                } else if (d.type === 'added') {
+                    html += `<div style="font-size:0.82rem;color:var(--success);">+ ${formatValue(d.value)}</div>`;
+                } else {
+                    html += `<div style="font-size:0.82rem;color:var(--error);">- ${formatValue(d.value)}</div>`;
+                }
+
+                html += `</div>`;
+            });
+
+            list.innerHTML = html;
+        }
+
+        function formatValue(val) {
+            if (val === null) return '<em>null</em>';
+            if (typeof val === 'object') return escapeHtml(JSON.stringify(val));
+            if (typeof val === 'string') return `"${escapeHtml(val)}"`;
+            return String(val);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function filterDiffs(type) {
+            // Update button styles
+            ['All', 'Added', 'Removed', 'Changed'].forEach(t => {
+                const btn = document.getElementById('filter' + t);
+                if (btn) btn.style.borderColor = 'var(--border-color)';
+            });
+            const activeBtn = document.getElementById('filter' + type.charAt(0).toUpperCase() + type.slice(1));
+            if (activeBtn) activeBtn.style.borderColor = 'var(--accent)';
+
+            if (type === 'all') {
+                renderDiffs(allDiffs);
+            } else {
+                renderDiffs(allDiffs.filter(d => d.type === type));
+            }
+        }
+
+        function swapInputs() {
+            const temp = leftInput.value;
+            leftInput.value = rightInput.value;
+            rightInput.value = temp;
+            showToast('Swapped!');
+        }
+
+        function loadSample() {
+            leftInput.value = JSON.stringify({
+                "name": "JSON Tools",
+                "version": "1.0.0",
+                "features": ["viewer", "formatter", "validator"],
+                "config": {
+                    "theme": "dark",
+                    "indent": 2,
+                    "autoSave": true
+                },
+                "deprecated": "old_feature"
+            }, null, 2);
+
+            rightInput.value = JSON.stringify({
+                "name": "JSON Tools Pro",
+                "version": "2.0.0",
+                "features": ["viewer", "formatter", "validator", "diff"],
+                "config": {
+                    "theme": "auto",
+                    "indent": 4,
+                    "autoSave": true,
+                    "newSetting": "enabled"
+                }
+            }, null, 2);
+
+            compareJSON();
+        }
+
+        function clearAll() {
+            leftInput.value = '';
+            rightInput.value = '';
+            allDiffs = [];
+            document.getElementById('diffStats').style.display = 'none';
+            document.getElementById('diffResults').style.display = 'none';
+            document.getElementById('noDiff').style.display = 'none';
+            setStatus('Ready', 'neutral');
+        }
+
+        function setStatus(text, type) {
+            document.getElementById('statusText').textContent = text;
+            document.getElementById('statusDot').className = 'status-dot ' + type;
+        }
+    </script>
+</body>
+</html>

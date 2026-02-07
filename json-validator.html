@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Validator Online - Check & Validate JSON Syntax</title>
+    <meta name="description" content="Free online JSON validator. Check if your JSON is valid, find syntax errors with line numbers, and get auto-fix suggestions.">
+    <meta property="og:title" content="JSON Validator Online">
+    <meta property="og:description" content="Validate JSON syntax, find errors with exact line numbers, and get fix suggestions.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <script src="app.js"></script>
+    <script>document.write(getNavHTML('validator'));</script>
+
+    <main>
+        <div class="page-header">
+            <h1>JSON Validator</h1>
+            <p>Check if your JSON is valid and find syntax errors with precise line and column numbers</p>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="validateJSON()">&#10003; Validate</button>
+            <button class="btn btn-secondary" onclick="autoFix()">&#128295; Auto Fix</button>
+            <div class="toolbar-separator"></div>
+            <button class="btn btn-secondary btn-sm" onclick="loadSampleInvalid()">Invalid Sample</button>
+            <button class="btn btn-secondary btn-sm" onclick="loadSampleValid()">Valid Sample</button>
+            <button class="btn btn-danger btn-sm" onclick="clearValidator()">&#128465; Clear</button>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-icon">&#128194;</div>
+            <div class="drop-text">Drop a JSON file here or <span>click to upload</span></div>
+        </div>
+
+        <div class="editor-layout">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">JSON Input</span>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                        <input type="checkbox" id="liveValidate" checked style="accent-color:var(--accent);">
+                        <span style="font-size:0.78rem;color:var(--text-muted);">Live Validate</span>
+                    </label>
+                </div>
+                <textarea class="editor-area" id="jsonInput" placeholder="Paste your JSON here to validate..." spellcheck="false"></textarea>
+            </div>
+
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Validation Result</span>
+                </div>
+                <div class="output-area" id="resultArea">
+                    <div style="color:var(--text-muted);text-align:center;padding-top:120px;">
+                        <div style="font-size:3rem;margin-bottom:12px;">&#128269;</div>
+                        <p>Enter JSON and click Validate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar" id="statusBar">
+            <div class="status-item">
+                <div class="status-dot neutral" id="statusDot"></div>
+                <span id="statusText">Ready</span>
+            </div>
+        </div>
+    </main>
+
+    <script>document.write(getFooterHTML());</script>
+
+    <script>
+        const input = document.getElementById('jsonInput');
+        const resultArea = document.getElementById('resultArea');
+
+        setupDropZone(document.getElementById('dropZone'), input, () => validateJSON());
+
+        // Live validation
+        let debounceTimer;
+        input.addEventListener('input', () => {
+            if (document.getElementById('liveValidate').checked) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(validateJSON, 400);
+            }
+        });
+
+        function validateJSON() {
+            const text = input.value.trim();
+            if (!text) {
+                resultArea.innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:120px;"><div style="font-size:3rem;margin-bottom:12px;">&#128269;</div><p>Enter JSON and click Validate</p></div>`;
+                setStatus('Ready', 'neutral');
+                return;
+            }
+
+            const result = parseJSON(text);
+
+            if (result.success) {
+                const stats = getJSONStats(result.data);
+                resultArea.innerHTML = `
+                    <div style="text-align:center;padding:40px 20px;">
+                        <div style="width:80px;height:80px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 20px;box-shadow:0 4px 20px rgba(34,197,94,0.3);">&#10003;</div>
+                        <h2 style="color:var(--success);margin-bottom:8px;">Valid JSON</h2>
+                        <p style="color:var(--text-muted);margin-bottom:24px;">Your JSON is well-formed and valid</p>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;max-width:500px;margin:0 auto;">
+                            <div class="card" style="padding:14px;text-align:center;">
+                                <div style="font-size:1.4rem;font-weight:800;color:var(--accent);">${stats.keys}</div>
+                                <div style="font-size:0.75rem;color:var(--text-muted);">Keys</div>
+                            </div>
+                            <div class="card" style="padding:14px;text-align:center;">
+                                <div style="font-size:1.4rem;font-weight:800;color:var(--accent);">${stats.objects}</div>
+                                <div style="font-size:0.75rem;color:var(--text-muted);">Objects</div>
+                            </div>
+                            <div class="card" style="padding:14px;text-align:center;">
+                                <div style="font-size:1.4rem;font-weight:800;color:var(--accent);">${stats.arrays}</div>
+                                <div style="font-size:0.75rem;color:var(--text-muted);">Arrays</div>
+                            </div>
+                            <div class="card" style="padding:14px;text-align:center;">
+                                <div style="font-size:1.4rem;font-weight:800;color:var(--accent);">${stats.depth}</div>
+                                <div style="font-size:0.75rem;color:var(--text-muted);">Depth</div>
+                            </div>
+                            <div class="card" style="padding:14px;text-align:center;">
+                                <div style="font-size:1.4rem;font-weight:800;color:var(--accent);">${stats.values}</div>
+                                <div style="font-size:0.75rem;color:var(--text-muted);">Values</div>
+                            </div>
+                            <div class="card" style="padding:14px;text-align:center;">
+                                <div style="font-size:1.4rem;font-weight:800;color:var(--accent);">${formatBytes(new Blob([text]).size)}</div>
+                                <div style="font-size:0.75rem;color:var(--text-muted);">Size</div>
+                            </div>
+                        </div>
+                    </div>`;
+                setStatus('Valid JSON', 'valid');
+            } else {
+                const lines = text.split('\n');
+                const errorLine = result.error.line;
+                let linesHTML = '';
+                if (errorLine) {
+                    const start = Math.max(0, errorLine - 4);
+                    const end = Math.min(lines.length, errorLine + 3);
+                    for (let i = start; i < end; i++) {
+                        const lineNum = i + 1;
+                        const isError = lineNum === errorLine;
+                        const escaped = lines[i].replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        linesHTML += `<div style="display:flex;gap:12px;padding:2px 8px;${isError ? 'background:rgba(239,68,68,0.15);border-left:3px solid var(--error);' : ''}">
+                            <span style="color:var(--text-muted);min-width:30px;text-align:right;user-select:none;">${lineNum}</span>
+                            <span style="color:${isError ? 'var(--error)' : 'var(--text-secondary)'};">${escaped}</span>
+                        </div>`;
+                    }
+                }
+
+                resultArea.innerHTML = `
+                    <div style="padding:20px;">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+                            <div style="width:48px;height:48px;border-radius:50%;background:var(--error);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">&#10007;</div>
+                            <div>
+                                <h3 style="color:var(--error);margin-bottom:4px;">Invalid JSON</h3>
+                                <p style="color:var(--text-secondary);font-size:0.85rem;">${result.error.message}</p>
+                            </div>
+                        </div>
+                        ${errorLine ? `
+                        <div style="margin-bottom:16px;">
+                            <div style="font-size:0.82rem;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
+                                Error at Line ${errorLine}${result.error.col ? `, Column ${result.error.col}` : ''}
+                            </div>
+                            <div style="background:var(--bg-input);border:1px solid var(--border-color);border-radius:var(--radius);padding:12px;font-family:monospace;font-size:0.85rem;line-height:1.8;overflow-x:auto;">
+                                ${linesHTML}
+                            </div>
+                        </div>` : ''}
+                        <div class="card" style="padding:14px;">
+                            <div style="font-size:0.82rem;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">&#128161; Common fixes:</div>
+                            <ul style="color:var(--text-muted);font-size:0.82rem;padding-left:18px;line-height:1.8;">
+                                <li>Check for trailing commas after the last item</li>
+                                <li>Ensure all strings use double quotes ("")</li>
+                                <li>Verify all brackets and braces are properly closed</li>
+                                <li>Remove comments (JSON doesn't support comments)</li>
+                                <li>Check for unescaped special characters in strings</li>
+                            </ul>
+                        </div>
+                    </div>`;
+                setStatus(`Error at line ${errorLine || '?'}`, 'invalid');
+            }
+        }
+
+        function autoFix() {
+            let text = input.value.trim();
+            if (!text) return;
+
+            // Try common fixes
+            // 1. Remove trailing commas
+            text = text.replace(/,\s*([\]}])/g, '$1');
+            // 2. Replace single quotes with double quotes (simple cases)
+            text = text.replace(/'/g, '"');
+            // 3. Add quotes to unquoted keys
+            text = text.replace(/(\{|,)\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":');
+            // 4. Remove comments
+            text = text.replace(/\/\/.*$/gm, '');
+            text = text.replace(/\/\*[\s\S]*?\*\//g, '');
+
+            input.value = text;
+            validateJSON();
+
+            const result = parseJSON(text);
+            if (result.success) {
+                input.value = JSON.stringify(result.data, null, 2);
+                showToast('JSON fixed and formatted!');
+            } else {
+                showToast('Auto-fix applied but JSON still has errors', 'error');
+            }
+        }
+
+        function loadSampleInvalid() {
+            input.value = `{
+  "name": "John",
+  "age": 30,
+  "hobbies": ['reading', "coding"],
+  "address": {
+    "city": "Seoul",
+    "zip": 12345,
+  },
+  // This is a comment
+  "active": true,
+}`;
+            validateJSON();
+        }
+
+        function loadSampleValid() {
+            input.value = JSON.stringify({
+                "name": "John",
+                "age": 30,
+                "hobbies": ["reading", "coding"],
+                "address": { "city": "Seoul", "zip": 12345 },
+                "active": true
+            }, null, 2);
+            validateJSON();
+        }
+
+        function clearValidator() {
+            input.value = '';
+            resultArea.innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:120px;"><div style="font-size:3rem;margin-bottom:12px;">&#128269;</div><p>Enter JSON and click Validate</p></div>`;
+            setStatus('Ready', 'neutral');
+        }
+
+        function setStatus(text, type) {
+            document.getElementById('statusText').textContent = text;
+            document.getElementById('statusDot').className = 'status-dot ' + type;
+        }
+    </script>
+</body>
+</html>

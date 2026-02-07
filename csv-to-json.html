@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSV to JSON Converter Online - Free CSV to JSON Tool</title>
     <meta name="description" content="Convert CSV data to JSON format online for free. Upload CSV files, preview as table, and get clean JSON output.">
+    <link rel="canonical" href="https://json-viewer-ce3.pages.dev/csv-to-json.html">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta property="og:title" content="CSV to JSON Converter Online - Free CSV to JSON Tool">
+    <meta property="og:description" content="Convert CSV data to JSON format online for free. Upload CSV files, preview as table, and get clean JSON output.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://json-viewer-ce3.pages.dev/csv-to-json.html">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="CSV to JSON Converter Online">
+    <meta name="twitter:description" content="Convert CSV data to JSON format online for free. Upload CSV files and get clean JSON output.">
     <meta name="google-adsense-account" content="ca-pub-8753276846370247">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8753276846370247" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
@@ -49,6 +58,31 @@
 
         <div class="status-bar"><div class="status-item"><div class="status-dot neutral" id="statusDot"></div><span id="statusText">Ready</span></div></div>
     </main>
+
+    <!-- Educational Content -->
+    <section class="guide-section">
+        <h2>What is CSV to JSON Conversion?</h2>
+        <p>CSV to JSON conversion transforms flat, tabular data from CSV (Comma-Separated Values) format into structured JSON (JavaScript Object Notation). The first row of the CSV is used as keys for the JSON objects, and each subsequent row becomes a JSON object in the resulting array.</p>
+        <p>This is especially useful when you need to use spreadsheet data in web applications, APIs, or any system that expects JSON input.</p>
+
+        <h2>How to Use This Tool</h2>
+        <ol class="guide-steps">
+            <li>Paste your CSV data into the input area, or click <strong>Upload</strong> to load a <code>.csv</code> file.</li>
+            <li>Click <strong>Convert to JSON</strong>. The first row of your CSV will be used as property names.</li>
+            <li>Preview the parsed data in the <strong>Table</strong> tab to verify column mapping.</li>
+            <li>Copy the JSON output or download it as a <code>.json</code> file.</li>
+        </ol>
+
+        <h2>Frequently Asked Questions</h2>
+        <details class="faq-item">
+            <summary>What if my CSV uses semicolons instead of commas?</summary>
+            <div class="faq-answer">The tool uses Papa Parse, which automatically detects the delimiter used in your CSV file. It supports commas, semicolons, tabs, and pipes as delimiters without any configuration needed.</div>
+        </details>
+        <details class="faq-item">
+            <summary>How are data types handled in the conversion?</summary>
+            <div class="faq-answer">By default, all CSV values are converted as strings in JSON. Numbers, booleans (<code>true</code>/<code>false</code>), and empty values are automatically detected and converted to their appropriate JSON types when dynamic typing is enabled.</div>
+        </details>
+    </section>
 
     <script>document.write(getFooterHTML());</script>
 

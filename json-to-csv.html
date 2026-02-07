@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON to CSV Converter Online - Free JSON to CSV Tool</title>
     <meta name="description" content="Convert JSON arrays to CSV format online for free. Preview as table, choose delimiters, and download CSV files instantly.">
+    <link rel="canonical" href="https://json-viewer-ce3.pages.dev/json-to-csv.html">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta property="og:title" content="JSON to CSV Converter Online - Free JSON to CSV Tool">
+    <meta property="og:description" content="Convert JSON arrays to CSV format online for free. Preview as table and download CSV files.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://json-viewer-ce3.pages.dev/json-to-csv.html">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="JSON to CSV Converter Online">
+    <meta name="twitter:description" content="Convert JSON arrays to CSV format online for free. Preview as table and download CSV files.">
     <meta name="google-adsense-account" content="ca-pub-8753276846370247">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8753276846370247" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
@@ -55,6 +64,40 @@
 
         <div class="status-bar"><div class="status-item"><div class="status-dot neutral" id="statusDot"></div><span id="statusText">Ready</span></div></div>
     </main>
+
+    <!-- Educational Content -->
+    <section class="guide-section">
+        <h2>What is JSON to CSV Conversion?</h2>
+        <p>JSON to CSV conversion transforms structured JSON data into a flat, tabular CSV (Comma-Separated Values) format. While JSON excels at representing hierarchical and nested data structures, CSV is the universal format for spreadsheet applications like Microsoft Excel, Google Sheets, and database import tools.</p>
+        <p>This tool automatically detects arrays of objects within your JSON data and converts them into CSV rows, with object keys becoming column headers.</p>
+
+        <h2>How to Use This Tool</h2>
+        <ol class="guide-steps">
+            <li>Paste your JSON data into the input area, or upload a <code>.json</code> file.</li>
+            <li>Click <strong>Convert to CSV</strong>. If your JSON contains multiple arrays, use the <strong>Source</strong> dropdown to select which array to convert.</li>
+            <li>Preview the result in the table view to verify the conversion.</li>
+            <li>Click <strong>Copy</strong> to copy the CSV text, or <strong>Download</strong> to save it as a <code>.csv</code> file.</li>
+        </ol>
+
+        <h2>JSON vs CSV: When to Use Which?</h2>
+        <div class="guide-card">
+            <ul>
+                <li><strong>JSON</strong> — Best for APIs, configuration files, and data with nested or hierarchical structures. Supports objects, arrays, and multiple data types.</li>
+                <li><strong>CSV</strong> — Best for flat, tabular data. Ideal for spreadsheets, data analysis, database imports, and simple data exchange.</li>
+                <li><strong>Convert JSON to CSV when</strong> — You need to import data into Excel/Google Sheets, perform data analysis, or share data with non-technical users.</li>
+            </ul>
+        </div>
+
+        <h2>Frequently Asked Questions</h2>
+        <details class="faq-item">
+            <summary>What happens to nested JSON objects during conversion?</summary>
+            <div class="faq-answer">Nested objects are flattened using dot notation for column headers. For example, <code>{"address":{"city":"Seoul"}}</code> becomes a column named <code>address.city</code> with the value <code>Seoul</code>. Arrays within objects are serialized as JSON strings in the CSV cell.</div>
+        </details>
+        <details class="faq-item">
+            <summary>Can I convert JSON with multiple arrays?</summary>
+            <div class="faq-answer">Yes. The tool automatically detects all arrays of objects in your JSON and presents them in a dropdown selector. You can choose which array to convert to CSV. If no arrays are found, the root object is flattened into a single CSV row.</div>
+        </details>
+    </section>
 
     <script>document.write(getFooterHTML());</script>
 

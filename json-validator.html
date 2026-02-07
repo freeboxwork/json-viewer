@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Validator Online - Check & Validate JSON Syntax</title>
     <meta name="description" content="Free online JSON validator. Check if your JSON is valid, find syntax errors with line numbers, and get auto-fix suggestions.">
+    <link rel="canonical" href="https://json-viewer-ce3.pages.dev/json-validator.html">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta property="og:title" content="JSON Validator Online - Check & Validate JSON Syntax">
+    <meta property="og:description" content="Free online JSON validator. Check if your JSON is valid, find syntax errors with line numbers, and get auto-fix suggestions.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://json-viewer-ce3.pages.dev/json-validator.html">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="JSON Validator Online - Check & Validate JSON Syntax">
+    <meta name="twitter:description" content="Free online JSON validator. Find syntax errors with line numbers and auto-fix suggestions.">
     <meta name="google-adsense-account" content="ca-pub-8753276846370247">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8753276846370247" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
@@ -60,6 +69,46 @@
             </div>
         </div>
     </main>
+
+    <!-- Educational Content -->
+    <section class="guide-section">
+        <h2>What is JSON Validation?</h2>
+        <p>JSON validation is the process of checking whether a text string conforms to the JSON (JavaScript Object Notation) specification defined in <a href="https://www.json.org/" target="_blank" rel="noopener">RFC 8259</a>. A valid JSON document must follow strict syntax rules: strings must use double quotes, no trailing commas are allowed, keys must be quoted, and comments are not permitted.</p>
+        <p>Even a single misplaced character — a missing comma, an extra bracket, or a single quote instead of a double quote — can cause an entire JSON document to fail parsing in applications and APIs.</p>
+
+        <h2>How to Use This Validator</h2>
+        <ol class="guide-steps">
+            <li>Paste your JSON text into the <strong>Input</strong> tab, or click <strong>Upload</strong> to load a file from your computer.</li>
+            <li>Click <strong>Validate</strong> to check the syntax. Enable <strong>Live Validate</strong> for real-time checking as you type.</li>
+            <li>If valid, you will see a summary with key counts, depth, and file size. If invalid, the exact error location (line and column) is highlighted.</li>
+            <li>Click <strong>Auto Fix</strong> to automatically correct common issues like trailing commas, single quotes, unquoted keys, and comments.</li>
+        </ol>
+
+        <h2>Common JSON Syntax Errors</h2>
+        <div class="guide-card">
+            <ul>
+                <li><strong>Trailing commas</strong> — JSON does not allow a comma after the last item in an object or array: <code>{"a":1,}</code> is invalid.</li>
+                <li><strong>Single quotes</strong> — All strings must use double quotes: <code>{'name':'value'}</code> should be <code>{"name":"value"}</code>.</li>
+                <li><strong>Unquoted keys</strong> — Object keys must be strings in double quotes: <code>{name:"value"}</code> is invalid.</li>
+                <li><strong>Comments</strong> — JSON does not support <code>//</code> or <code>/* */</code> comments. Use JSONC or JSON5 formats if you need comments.</li>
+                <li><strong>Missing brackets</strong> — Every <code>{</code> needs a matching <code>}</code>, and every <code>[</code> needs a matching <code>]</code>.</li>
+            </ul>
+        </div>
+
+        <h2>Frequently Asked Questions</h2>
+        <details class="faq-item">
+            <summary>What does the Auto Fix feature do?</summary>
+            <div class="faq-answer">Auto Fix attempts to correct common JSON mistakes automatically. It removes trailing commas, converts single quotes to double quotes, adds quotes to unquoted keys, and strips JavaScript-style comments. After applying fixes, it re-validates the result.</div>
+        </details>
+        <details class="faq-item">
+            <summary>Is JSON validation the same as JSON Schema validation?</summary>
+            <div class="faq-answer">No. This tool performs <strong>syntax validation</strong> — it checks if your text is valid JSON according to the JSON specification. JSON Schema validation is a separate process that checks whether valid JSON conforms to a specific structure or data model you define.</div>
+        </details>
+        <details class="faq-item">
+            <summary>Why does my JSON work in JavaScript but fail validation?</summary>
+            <div class="faq-answer">JavaScript is more lenient than the JSON specification. JavaScript allows single quotes, unquoted keys, trailing commas, and comments — none of which are valid in strict JSON. Use our Auto Fix to convert JavaScript object notation into valid JSON.</div>
+        </details>
+    </section>
 
     <script>document.write(getFooterHTML());</script>
 

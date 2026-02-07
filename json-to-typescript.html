@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON to TypeScript Interface Converter - Free Online Tool</title>
     <meta name="description" content="Generate TypeScript interfaces from JSON data automatically. Convert JSON objects to TypeScript types with nested interface support.">
+    <link rel="canonical" href="https://json-viewer-ce3.pages.dev/json-to-typescript.html">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta property="og:title" content="JSON to TypeScript Interface Converter - Free Online Tool">
+    <meta property="og:description" content="Generate TypeScript interfaces from JSON data automatically. Convert JSON to TypeScript types.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://json-viewer-ce3.pages.dev/json-to-typescript.html">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="JSON to TypeScript Interface Converter">
+    <meta name="twitter:description" content="Generate TypeScript interfaces from JSON data automatically.">
     <meta name="google-adsense-account" content="ca-pub-8753276846370247">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8753276846370247" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
@@ -47,6 +56,41 @@
 
         <div class="status-bar"><div class="status-item"><div class="status-dot neutral" id="statusDot"></div><span id="statusText">Ready</span></div></div>
     </main>
+
+    <!-- Educational Content -->
+    <section class="guide-section">
+        <h2>What is JSON to TypeScript Conversion?</h2>
+        <p>JSON to TypeScript conversion automatically generates TypeScript interface definitions from JSON data. TypeScript interfaces describe the shape of an object — specifying what properties it has and what types those properties can be. This process saves developers significant time that would otherwise be spent manually writing type definitions.</p>
+        <p>When working with APIs that return JSON responses, having accurate TypeScript interfaces provides compile-time type checking, autocompletion in your IDE, and protection against runtime errors caused by incorrect data assumptions.</p>
+
+        <h2>How to Use This Tool</h2>
+        <ol class="guide-steps">
+            <li>Paste a sample JSON response (e.g., from an API) into the input area.</li>
+            <li>Set the <strong>Root Interface Name</strong> (default is <code>RootObject</code>).</li>
+            <li>Click <strong>Generate TypeScript</strong> to create interface definitions.</li>
+            <li>Copy the generated TypeScript code and paste it into your project's type definition files.</li>
+        </ol>
+
+        <h2>Why Use TypeScript Interfaces?</h2>
+        <div class="guide-card">
+            <ul>
+                <li><strong>Type Safety</strong> — Catch errors at compile time instead of runtime. Know exactly what properties exist on your data.</li>
+                <li><strong>IDE Autocompletion</strong> — Get intelligent suggestions and documentation as you type, making development faster and less error-prone.</li>
+                <li><strong>Documentation</strong> — Interfaces serve as living documentation of your data structures, making code easier to understand and maintain.</li>
+                <li><strong>Refactoring</strong> — When data structures change, TypeScript highlights every location that needs updating.</li>
+            </ul>
+        </div>
+
+        <h2>Frequently Asked Questions</h2>
+        <details class="faq-item">
+            <summary>How are nested objects handled?</summary>
+            <div class="faq-answer">Nested objects are converted into separate named interfaces. For example, a JSON object with an <code>address</code> property containing <code>city</code> and <code>zip</code> would generate both a root interface and a separate <code>Address</code> interface.</div>
+        </details>
+        <details class="faq-item">
+            <summary>What about arrays with mixed types?</summary>
+            <div class="faq-answer">If an array contains elements of different types, the tool creates a union type. For example, an array with both numbers and strings would be typed as <code>(number | string)[]</code>.</div>
+        </details>
+    </section>
 
     <script>document.write(getFooterHTML());</script>
 

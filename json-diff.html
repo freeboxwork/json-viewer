@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Diff Online - Compare Two JSON Objects</title>
     <meta name="description" content="Compare two JSON objects online for free. See differences highlighted with added, removed, and changed values.">
+    <link rel="canonical" href="https://json-viewer-ce3.pages.dev/json-diff.html">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta property="og:title" content="JSON Diff Online - Compare Two JSON Objects">
+    <meta property="og:description" content="Compare two JSON objects online for free. See differences highlighted with added, removed, and changed values.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://json-viewer-ce3.pages.dev/json-diff.html">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="JSON Diff Online - Compare Two JSON Objects">
+    <meta name="twitter:description" content="Compare two JSON objects online. See differences highlighted with added, removed, and changed values.">
     <meta name="google-adsense-account" content="ca-pub-8753276846370247">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8753276846370247" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
@@ -85,6 +94,45 @@
 
         <div class="status-bar" style="margin-top:12px;"><div class="status-item"><div class="status-dot neutral" id="statusDot"></div><span id="statusText">Ready</span></div></div>
     </main>
+
+    <!-- Educational Content -->
+    <section class="guide-section">
+        <h2>What is JSON Diff?</h2>
+        <p>JSON Diff (or JSON comparison) is the process of analyzing two JSON documents to identify the differences between them. The tool categorizes changes into three types: <strong>added</strong> (keys or values present only in the modified version), <strong>removed</strong> (keys or values present only in the original), and <strong>changed</strong> (keys that exist in both but have different values).</p>
+        <p>JSON comparison is essential for debugging API responses, tracking configuration changes, validating data migrations, and reviewing pull requests that modify JSON files.</p>
+
+        <h2>How to Use This Tool</h2>
+        <ol class="guide-steps">
+            <li>Paste the original JSON into the <strong>Original (Left)</strong> panel.</li>
+            <li>Paste the modified JSON into the <strong>Modified (Right)</strong> panel.</li>
+            <li>Click <strong>Compare</strong> to see all differences. Use <strong>Swap</strong> to reverse the comparison direction.</li>
+            <li>Filter results by type — Added, Removed, or Changed — using the filter buttons in the results section.</li>
+        </ol>
+
+        <h2>Common Use Cases</h2>
+        <div class="guide-card">
+            <ul>
+                <li><strong>API Response Debugging</strong> — Compare expected vs. actual API responses to identify discrepancies in your application.</li>
+                <li><strong>Configuration Management</strong> — Track what changed between two versions of a config file (e.g., <code>package.json</code>, <code>tsconfig.json</code>).</li>
+                <li><strong>Data Migration Verification</strong> — Confirm that data was correctly transformed during migrations by comparing input and output.</li>
+                <li><strong>Code Review</strong> — Quickly see what changed in JSON fixtures or mock data files in pull requests.</li>
+            </ul>
+        </div>
+
+        <h2>Frequently Asked Questions</h2>
+        <details class="faq-item">
+            <summary>Does the order of keys matter in JSON comparison?</summary>
+            <div class="faq-answer">No. This tool performs a deep structural comparison, not a text-based diff. Two JSON objects with the same keys and values in different orders are considered identical. Only actual data differences are reported.</div>
+        </details>
+        <details class="faq-item">
+            <summary>Can I compare large JSON files?</summary>
+            <div class="faq-answer">Yes. Since all processing happens in your browser, you can compare JSON files of any size that your device's memory can handle. For very large files (10MB+), the comparison may take a few seconds depending on your hardware.</div>
+        </details>
+        <details class="faq-item">
+            <summary>How does nested comparison work?</summary>
+            <div class="faq-answer">The tool recursively compares all nested objects and arrays. Each difference is shown with its full JSONPath (e.g., <code>$.config.theme</code>), so you can pinpoint exactly where in the structure a change occurred.</div>
+        </details>
+    </section>
 
     <script>document.write(getFooterHTML());</script>
 

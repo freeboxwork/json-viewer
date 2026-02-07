@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Minify Online - Compress & Minify JSON</title>
     <meta name="description" content="Free online JSON minifier. Compress JSON by removing whitespace, newlines, and indentation. See size reduction percentage.">
+    <link rel="canonical" href="https://json-viewer-ce3.pages.dev/json-minify.html">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta property="og:title" content="JSON Minify Online - Compress & Minify JSON">
+    <meta property="og:description" content="Free online JSON minifier. Compress JSON by removing whitespace, newlines, and indentation.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://json-viewer-ce3.pages.dev/json-minify.html">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="JSON Minify Online - Compress & Minify JSON">
+    <meta name="twitter:description" content="Free online JSON minifier. Compress JSON and see size reduction percentage.">
     <meta name="google-adsense-account" content="ca-pub-8753276846370247">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8753276846370247" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
@@ -53,6 +62,45 @@
             <div class="status-item"><div class="status-dot neutral" id="statusDot"></div><span id="statusText">Ready</span></div>
         </div>
     </main>
+
+    <!-- Educational Content -->
+    <section class="guide-section">
+        <h2>What is JSON Minification?</h2>
+        <p>JSON minification (also called compression) is the process of removing all unnecessary whitespace, line breaks, and indentation from a JSON document without changing its data. The result is a single-line, compact string that is functionally identical to the original but takes up significantly less space.</p>
+        <p>Minified JSON is commonly used in production environments where network bandwidth and storage efficiency matter. APIs, configuration payloads, and data transfers all benefit from smaller JSON sizes.</p>
+
+        <h2>How to Use This Tool</h2>
+        <ol class="guide-steps">
+            <li>Paste your formatted or beautified JSON into the <strong>Input</strong> tab.</li>
+            <li>Click <strong>Minify</strong> to compress the JSON. The tool removes all whitespace while preserving data integrity.</li>
+            <li>View the size comparison bar showing original size, minified size, and the percentage saved.</li>
+            <li>Click <strong>Copy</strong> to copy the minified output, or <strong>Download</strong> to save it as a file.</li>
+        </ol>
+
+        <h2>Why Minify JSON?</h2>
+        <div class="guide-card">
+            <ul>
+                <li><strong>Faster API Responses</strong> — Smaller payloads mean faster data transfer between servers and clients, improving application performance.</li>
+                <li><strong>Reduced Bandwidth</strong> — Minified JSON uses 30-70% less bandwidth, which directly impacts hosting costs and mobile data usage.</li>
+                <li><strong>Smaller Storage</strong> — When storing JSON in databases or files, minified format saves significant disk space.</li>
+                <li><strong>Optimized Builds</strong> — Many build tools and bundlers minify JSON configuration files as part of the production optimization process.</li>
+            </ul>
+        </div>
+
+        <h2>Frequently Asked Questions</h2>
+        <details class="faq-item">
+            <summary>Does minifying JSON change the data?</summary>
+            <div class="faq-answer">No. Minification only removes whitespace characters (spaces, tabs, newlines) that exist between JSON tokens. All keys, values, and data structure remain exactly the same. The minified JSON is semantically identical to the original.</div>
+        </details>
+        <details class="faq-item">
+            <summary>How much space can I save by minifying?</summary>
+            <div class="faq-answer">The savings depend on how much whitespace the original JSON contains. Typically, you can expect 30-60% reduction for JSON formatted with 2-space indentation, and even more for 4-space or tab-indented JSON. Deeply nested structures with many levels of indentation see the greatest savings.</div>
+        </details>
+        <details class="faq-item">
+            <summary>What is the difference between Minify and Beautify?</summary>
+            <div class="faq-answer">Minify removes all whitespace to make JSON as compact as possible, while Beautify (also called formatting or pretty-printing) adds indentation and line breaks to make JSON human-readable. Both operations preserve the data — they only change the visual representation.</div>
+        </details>
+    </section>
 
     <script>document.write(getFooterHTML());</script>
 

@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON to YAML Converter Online - Free JSON to YAML Tool</title>
     <meta name="description" content="Convert JSON to YAML format online for free. Clean, readable YAML output with syntax highlighting.">
+    <link rel="canonical" href="https://json-viewer-ce3.pages.dev/json-to-yaml.html">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta property="og:title" content="JSON to YAML Converter Online - Free JSON to YAML Tool">
+    <meta property="og:description" content="Convert JSON to YAML format online for free. Clean, readable YAML output.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://json-viewer-ce3.pages.dev/json-to-yaml.html">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="JSON to YAML Converter Online">
+    <meta name="twitter:description" content="Convert JSON to clean, human-readable YAML format online for free.">
     <meta name="google-adsense-account" content="ca-pub-8753276846370247">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8753276846370247" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
@@ -48,6 +57,40 @@
 
         <div class="status-bar"><div class="status-item"><div class="status-dot neutral" id="statusDot"></div><span id="statusText">Ready</span></div></div>
     </main>
+
+    <!-- Educational Content -->
+    <section class="guide-section">
+        <h2>What is JSON to YAML Conversion?</h2>
+        <p>JSON to YAML conversion transforms data from JSON format into YAML (YAML Ain't Markup Language), a human-friendly data serialization standard. YAML uses indentation instead of braces and brackets, making it significantly more readable for configuration files, especially those edited by humans.</p>
+        <p>YAML is the standard format for Kubernetes manifests, Docker Compose files, Ansible playbooks, GitHub Actions workflows, and many other DevOps and infrastructure-as-code tools.</p>
+
+        <h2>How to Use This Tool</h2>
+        <ol class="guide-steps">
+            <li>Paste your JSON data into the input area or upload a <code>.json</code> file.</li>
+            <li>Click <strong>Convert to YAML</strong> to generate clean, properly indented YAML output.</li>
+            <li>Copy the YAML output or download it as a <code>.yaml</code> file.</li>
+        </ol>
+
+        <h2>JSON vs YAML: Key Differences</h2>
+        <div class="guide-card">
+            <ul>
+                <li><strong>Readability</strong> — YAML is more human-readable thanks to its indentation-based syntax. JSON uses braces and brackets which can be harder to scan visually.</li>
+                <li><strong>Comments</strong> — YAML supports comments with <code>#</code>, making it ideal for configuration files. JSON does not support comments.</li>
+                <li><strong>Data Types</strong> — YAML supports additional types like dates, timestamps, and multi-line strings natively. JSON has a more limited type system.</li>
+                <li><strong>Use Cases</strong> — YAML is preferred for configuration files (Kubernetes, Docker, CI/CD). JSON is standard for APIs and data interchange.</li>
+            </ul>
+        </div>
+
+        <h2>Frequently Asked Questions</h2>
+        <details class="faq-item">
+            <summary>Is YAML a superset of JSON?</summary>
+            <div class="faq-answer">Yes, technically. Valid JSON is also valid YAML (since YAML 1.2). This means you can use JSON syntax within YAML files. However, YAML offers a much richer syntax with features like anchors, aliases, and multi-line strings that JSON does not support.</div>
+        </details>
+        <details class="faq-item">
+            <summary>Why do Kubernetes and Docker use YAML instead of JSON?</summary>
+            <div class="faq-answer">YAML's support for comments, multi-line strings, and cleaner indentation-based syntax makes it much easier for developers to write and maintain infrastructure configuration files by hand. JSON is more suited for machine-generated data interchange.</div>
+        </details>
+    </section>
 
     <script>document.write(getFooterHTML());</script>
 

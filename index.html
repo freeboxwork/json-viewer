@@ -5,11 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Viewer & Formatter Online - Free JSON Beautifier</title>
     <meta name="description" content="Free online JSON viewer, formatter and beautifier. Visualize JSON as an interactive tree, format with syntax highlighting, search keys, and copy JSONPath.">
-    <meta property="og:title" content="JSON Viewer & Formatter Online">
+    <link rel="canonical" href="https://json-viewer-ce3.pages.dev/index.html">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta property="og:title" content="JSON Viewer & Formatter Online - Free JSON Beautifier">
     <meta property="og:description" content="Free online JSON viewer and formatter with tree view, syntax highlighting, and search.">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://json-viewer-ce3.pages.dev/index.html">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="JSON Viewer & Formatter Online - Free JSON Beautifier">
+    <meta name="twitter:description" content="Free online JSON viewer, formatter and beautifier. Visualize JSON as an interactive tree.">
     <meta name="google-adsense-account" content="ca-pub-8753276846370247">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8753276846370247" crossorigin="anonymous"></script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "JSON Viewer & Formatter",
+        "url": "https://json-viewer-ce3.pages.dev",
+        "description": "Free online JSON viewer, formatter and beautifier. Visualize JSON as an interactive tree, format with syntax highlighting, search keys, and copy JSONPath.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "isPartOf": {
+            "@type": "WebSite",
+            "name": "JSON Tools",
+            "url": "https://json-viewer-ce3.pages.dev"
+        }
+    }
+    </script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="fixed-layout">
@@ -130,6 +153,58 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
             <div style="margin-left:auto;font-size:0.78rem;color:var(--text-muted);" id="inputSize"></div>
         </div>
     </main>
+
+    <!-- Educational Content for SEO -->
+    <section class="guide-section">
+        <h2>What is JSON?</h2>
+        <p>JSON (JavaScript Object Notation) is a lightweight, text-based data interchange format that is easy for humans to read and write, and easy for machines to parse and generate. Originally derived from JavaScript, JSON has become a language-independent standard used across virtually all modern programming languages and platforms.</p>
+        <p>JSON is the most widely used format for APIs, configuration files, and data storage in web applications. Its simplicity and readability make it the preferred choice over alternatives like XML for most web-based data exchange.</p>
+
+        <h2>What is a JSON Viewer & Formatter?</h2>
+        <p>A JSON Viewer & Formatter is a tool that takes raw or minified JSON text and transforms it into a well-structured, human-readable format. This tool provides two main views:</p>
+        <ul>
+            <li><strong>Formatted View</strong> — Displays JSON with proper indentation, syntax highlighting for keys, strings, numbers, booleans, and null values, making it easy to read at a glance.</li>
+            <li><strong>Tree View</strong> — Presents JSON as an interactive, collapsible tree structure where you can expand and collapse nodes, search for keys or values, and copy JSONPath expressions.</li>
+        </ul>
+
+        <h2>How to Use This Tool</h2>
+        <ol class="guide-steps">
+            <li>Paste your JSON data into the <strong>Input</strong> tab, or click <strong>Upload</strong> to load a <code>.json</code> file. You can also drag and drop a file directly.</li>
+            <li>Click the <strong>Format</strong> button to beautify your JSON, or switch to the <strong>Formatted</strong> or <strong>Tree View</strong> tab — the JSON will be parsed automatically.</li>
+            <li>Use the <strong>Indent</strong> dropdown to choose between 2 spaces, 4 spaces, or tabs for formatting.</li>
+            <li>In Tree View, click any node to see its path, key, and value in the detail panel. Use <strong>+</strong> / <strong>−</strong> buttons to expand or collapse sections.</li>
+            <li>Use the <strong>Search</strong> bar at the bottom of the tree to find specific keys or values. Navigate between matches with the Prev / Next buttons.</li>
+        </ol>
+
+        <h2>Why Use This JSON Viewer?</h2>
+        <div class="guide-card">
+            <ul>
+                <li><strong>100% Client-Side Processing</strong> — Your data never leaves your browser. No data is uploaded to any server, ensuring complete privacy and security.</li>
+                <li><strong>Interactive Tree View</strong> — Explore complex JSON structures with collapsible nodes, type badges, guide lines, and JSONPath copying.</li>
+                <li><strong>Instant Validation</strong> — The tool automatically validates your JSON and provides detailed error messages with line and column numbers if something is wrong.</li>
+                <li><strong>Search & Navigation</strong> — Quickly find specific keys or values within large JSON documents and navigate between matches.</li>
+                <li><strong>Free & No Sign-Up</strong> — Use all features without registration, subscriptions, or hidden fees.</li>
+            </ul>
+        </div>
+
+        <h2>Frequently Asked Questions</h2>
+        <details class="faq-item">
+            <summary>Is my JSON data safe when using this tool?</summary>
+            <div class="faq-answer">Yes. JSON Tools processes everything entirely in your browser using JavaScript. Your data is never sent to any external server. You can verify this by checking your browser's network tab — no JSON data is transmitted.</div>
+        </details>
+        <details class="faq-item">
+            <summary>What is the maximum JSON file size I can process?</summary>
+            <div class="faq-answer">Since processing happens in your browser, the limit depends on your device's memory. In practice, most modern browsers can handle JSON files up to 50-100 MB without issues. For very large files, consider using a dedicated desktop application.</div>
+        </details>
+        <details class="faq-item">
+            <summary>What is JSONPath and how do I copy it?</summary>
+            <div class="faq-answer">JSONPath is a query language for JSON, similar to XPath for XML. It provides a way to reference specific elements within a JSON document. In our Tree View, click any node to see its full JSONPath in the detail panel (e.g., <code>$.user.address.city</code>), then click the Copy button to copy it to your clipboard.</div>
+        </details>
+        <details class="faq-item">
+            <summary>Can I use this tool offline?</summary>
+            <div class="faq-answer">Once the page is loaded, all core functionality works without an internet connection since everything runs client-side. However, you need an initial internet connection to load the page.</div>
+        </details>
+    </section>
 
     <script>document.write(getFooterHTML());</script>
 

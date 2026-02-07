@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://json-viewer-ce3.pages.dev/sitemap.xml

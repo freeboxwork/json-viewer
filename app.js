@@ -631,11 +631,12 @@ function getFooterHTML() {
     return `
     <footer class="site-footer">
         <div class="footer-inner">
-            <span class="footer-copy">&copy; 2026 JSON Tools</span>
+            <span class="footer-copy">&copy; 2026 JSON Tools &mdash; All processing is done in your browser. Your data stays private.</span>
             <div class="footer-links">
                 <a href="about.html">About</a>
                 <a href="privacy-policy.html">Privacy Policy</a>
                 <a href="terms.html">Terms of Service</a>
+                <a href="sitemap.xml">Sitemap</a>
             </div>
         </div>
     </footer>`;

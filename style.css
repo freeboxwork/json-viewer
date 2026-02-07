@@ -515,41 +515,49 @@ body.fixed-layout .status-bar {
 .tree-view {
     font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
     font-size: 0.8rem;
-    line-height: 1.5;
+    line-height: 20px;
+    padding: 4px 0;
 }
 
 .tree-node {
-    padding-left: 18px;
-    border-left: 1px solid var(--border-color);
-    margin-left: 7px;
+    position: relative;
+    margin-left: 20px;
 }
 
-.tree-node:hover {
+/* Vertical guide line connecting children */
+.tree-node::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -12px;
+    bottom: 10px;
+    border-left: 1px solid var(--border-color);
+}
+
+.tree-node:hover > .tree-node::before {
     border-left-color: var(--border-hover);
+}
+
+/* Horizontal branch line from vertical guide to each child */
+.tree-node > .tree-line::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: -12px;
+    width: 8px;
+    border-top: 1px solid var(--border-color);
 }
 
 .tree-line {
     display: flex;
-    align-items: flex-start;
-    gap: 4px;
-    padding: 1px 0;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px;
+    padding: 0 2px;
     cursor: default;
     border-radius: 3px;
     position: relative;
-}
-
-/* Horizontal branch line from vertical guide to content */
-.tree-node > .tree-line::before {
-    content: '';
-    position: absolute;
-    left: -18px;
-    top: 9px;
-    width: 14px;
-    border-top: 1px solid var(--border-color);
-}
-
-.tree-node:hover > .tree-line::before {
-    border-top-color: var(--border-hover);
+    min-height: 20px;
 }
 
 .tree-line:hover {
@@ -558,6 +566,11 @@ body.fixed-layout .status-bar {
 
 [data-theme="light"] .tree-line:hover {
     background: rgba(0,0,0,0.03);
+}
+
+/* Force tree-node inside tree-line to wrap to new line */
+.tree-line > .tree-node {
+    flex-basis: 100%;
 }
 
 .tree-toggle {
@@ -577,6 +590,7 @@ body.fixed-layout .status-bar {
     line-height: 1;
     background: var(--bg-tertiary);
     transition: background var(--transition), color var(--transition);
+    margin-right: 2px;
 }
 
 .tree-toggle:hover {

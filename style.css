@@ -73,11 +73,11 @@ body {
     line-height: 1.6;
 }
 
-/* Fixed frame layout - page does not scroll, only inner frames scroll */
+/* Fixed frame layout - tool fills viewport, guide content below fold */
 body.fixed-layout {
-    height: 100vh;
-    overflow-x: hidden;
-    overflow-y: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 body.fixed-layout main {
@@ -85,9 +85,8 @@ body.fixed-layout main {
     flex-direction: column;
     overflow: hidden;
     height: calc(100vh - 56px);
+    min-height: calc(100vh - 56px);
     flex-shrink: 0;
-    flex: 1;
-    min-height: 0;
     padding: 12px 20px;
 }
 
@@ -120,7 +119,7 @@ body.fixed-layout .tab-panel .output-area {
 }
 
 body.fixed-layout .site-footer {
-    display: flex;
+    display: block;
 }
 
 /* ===== Navigation ===== */

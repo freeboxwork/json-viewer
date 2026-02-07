@@ -2,7 +2,7 @@
 
 // ===== Theme Management =====
 function initTheme() {
-    const saved = localStorage.getItem('json-tools-theme') || 'dark';
+    const saved = localStorage.getItem('json-tools-theme') || 'light';
     document.documentElement.setAttribute('data-theme', saved);
     updateThemeIcon();
 }

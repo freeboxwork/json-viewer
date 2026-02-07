@@ -23,6 +23,8 @@
     <meta name="description" content="Convert JSON to XML format online for free. Customize root element name, get formatted XML output with syntax highlighting.">
     <link rel="canonical" href="https://json-viewer-ce3.pages.dev/json-to-xml.html">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="icon.png">
     <meta property="og:title" content="JSON to XML Converter Online - Free JSON to XML Tool">
     <meta property="og:description" content="Convert JSON to XML format online for free. Customize root element name, get formatted XML output.">
     <meta property="og:type" content="website">
@@ -40,11 +42,11 @@
     <script type="application/ld+json">
     [{"@context":"https://schema.org","@type":"WebApplication","name":"JSON to XML Converter","url":"https://json-viewer-ce3.pages.dev/json-to-xml.html","description":"Free online JSON to XML converter. Convert JSON data to well-formed XML.","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isPartOf":{"@type":"WebSite","name":"JSON Tools","url":"https://json-viewer-ce3.pages.dev"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"JSON Tools","item":"https://json-viewer-ce3.pages.dev"},{"@type":"ListItem","position":2,"name":"JSON to XML","item":"https://json-viewer-ce3.pages.dev/json-to-xml.html"}]}]
     </script>
+    <link rel="preload" href="style.css" as="style">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <script src="app.js"></script>
-    <script>document.write(getNavHTML('to-xml'));</script>
+<body data-page="to-xml">
+    <nav id="site-nav"></nav>
 
     <main>
         <div class="page-header">
@@ -115,7 +117,7 @@
         </details>
     </section>
 
-    <script>document.write(getFooterHTML());</script>
+    <div id="site-footer"></div>
 
     <script>
         let xmlText = '';
@@ -145,5 +147,6 @@
         function clearAll() { document.getElementById('jsonInput').value = ''; document.getElementById('xmlOutput').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">&lt;/&gt;</div><p>XML output will appear here</p></div>`; xmlText = ''; setStatus('Ready', 'neutral'); switchTab('input'); }
         function setStatus(t, type) { document.getElementById('statusText').textContent = t; document.getElementById('statusDot').className = 'status-dot ' + type; }
     </script>
+    <script src="app.js" defer></script>
 </body>
 </html>

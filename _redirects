@@ -1,0 +1,2 @@
+# URL Canonicalization - redirect index.html to root
+/index.html  /  301

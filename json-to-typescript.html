@@ -23,6 +23,8 @@
     <meta name="description" content="Generate TypeScript interfaces from JSON data automatically. Convert JSON objects to TypeScript types with nested interface support.">
     <link rel="canonical" href="https://json-viewer-ce3.pages.dev/json-to-typescript.html">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="icon.png">
     <meta property="og:title" content="JSON to TypeScript Interface Converter - Free Online Tool">
     <meta property="og:description" content="Generate TypeScript interfaces from JSON data automatically. Convert JSON to TypeScript types.">
     <meta property="og:type" content="website">
@@ -40,11 +42,11 @@
     <script type="application/ld+json">
     [{"@context":"https://schema.org","@type":"WebApplication","name":"JSON to TypeScript Converter","url":"https://json-viewer-ce3.pages.dev/json-to-typescript.html","description":"Free online JSON to TypeScript interface converter. Generate TypeScript type definitions from JSON data.","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isPartOf":{"@type":"WebSite","name":"JSON Tools","url":"https://json-viewer-ce3.pages.dev"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"JSON Tools","item":"https://json-viewer-ce3.pages.dev"},{"@type":"ListItem","position":2,"name":"JSON to TypeScript","item":"https://json-viewer-ce3.pages.dev/json-to-typescript.html"}]}]
     </script>
+    <link rel="preload" href="style.css" as="style">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <script src="app.js"></script>
-    <script>document.write(getNavHTML('to-ts'));</script>
+<body data-page="to-ts">
+    <nav id="site-nav"></nav>
 
     <main>
         <div class="page-header">
@@ -116,7 +118,7 @@
         </details>
     </section>
 
-    <script>document.write(getFooterHTML());</script>
+    <div id="site-footer"></div>
 
     <script>
         let tsText = '';
@@ -148,5 +150,6 @@
         function clearAll() { document.getElementById('jsonInput').value = ''; document.getElementById('tsOutput').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">TS</div><p>TypeScript interfaces will appear here</p></div>`; tsText = ''; setStatus('Ready', 'neutral'); switchTab('input'); }
         function setStatus(t, type) { document.getElementById('statusText').textContent = t; document.getElementById('statusDot').className = 'status-dot ' + type; }
     </script>
+    <script src="app.js" defer></script>
 </body>
 </html>

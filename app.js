@@ -703,9 +703,22 @@ function setupTextareaDrop(textareaId, callback) {
 
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
-    initTheme();
-    // Close dropdown on outside click
-    document.addEventListener('click', () => {
-        document.querySelectorAll('.nav-dropdown.open').forEach(dd => dd.classList.remove('open'));
-    });
+    try {
+        // Insert nav and footer from placeholders
+        const navEl = document.getElementById('site-nav');
+        if (navEl) {
+            navEl.outerHTML = getNavHTML(document.body.dataset.page || '');
+        }
+        const footerEl = document.getElementById('site-footer');
+        if (footerEl) {
+            footerEl.outerHTML = getFooterHTML();
+        }
+        initTheme();
+        // Close dropdown on outside click
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.nav-dropdown.open').forEach(dd => dd.classList.remove('open'));
+        });
+    } catch (e) {
+        console.warn('Init error:', e);
+    }
 });

@@ -23,6 +23,8 @@
     <meta name="description" content="Free online JSON validator. Check if your JSON is valid, find syntax errors with line numbers, and get auto-fix suggestions.">
     <link rel="canonical" href="https://json-viewer-ce3.pages.dev/json-validator.html">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="icon.png">
     <meta property="og:title" content="JSON Validator Online - Check & Validate JSON Syntax">
     <meta property="og:description" content="Free online JSON validator. Check if your JSON is valid, find syntax errors with line numbers, and get auto-fix suggestions.">
     <meta property="og:type" content="website">
@@ -40,11 +42,11 @@
     <script type="application/ld+json">
     [{"@context":"https://schema.org","@type":"WebApplication","name":"JSON Validator","url":"https://json-viewer-ce3.pages.dev/json-validator.html","description":"Free online JSON validator. Check if your JSON is valid, find syntax errors with line numbers, and get auto-fix suggestions.","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isPartOf":{"@type":"WebSite","name":"JSON Tools","url":"https://json-viewer-ce3.pages.dev"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"JSON Tools","item":"https://json-viewer-ce3.pages.dev"},{"@type":"ListItem","position":2,"name":"JSON Validator","item":"https://json-viewer-ce3.pages.dev/json-validator.html"}]}]
     </script>
+    <link rel="preload" href="style.css" as="style">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <script src="app.js"></script>
-    <script>document.write(getNavHTML('validator'));</script>
+<body data-page="validator">
+    <nav id="site-nav"></nav>
 
     <main>
         <div class="page-header">
@@ -134,7 +136,7 @@
         </details>
     </section>
 
-    <script>document.write(getFooterHTML());</script>
+    <div id="site-footer"></div>
 
     <script>
         const input = document.getElementById('jsonInput');
@@ -246,5 +248,6 @@
             document.getElementById('statusDot').className = 'status-dot ' + type;
         }
     </script>
+    <script src="app.js" defer></script>
 </body>
 </html>

@@ -23,6 +23,8 @@
     <meta name="description" content="Compare two JSON objects online for free. See differences highlighted with added, removed, and changed values.">
     <link rel="canonical" href="https://json-viewer-ce3.pages.dev/json-diff.html">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="icon.png">
     <meta property="og:title" content="JSON Diff Online - Compare Two JSON Objects">
     <meta property="og:description" content="Compare two JSON objects online for free. See differences highlighted with added, removed, and changed values.">
     <meta property="og:type" content="website">
@@ -40,11 +42,11 @@
     <script type="application/ld+json">
     [{"@context":"https://schema.org","@type":"WebApplication","name":"JSON Diff","url":"https://json-viewer-ce3.pages.dev/json-diff.html","description":"Free online JSON diff tool. Compare two JSON objects side by side and find differences.","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isPartOf":{"@type":"WebSite","name":"JSON Tools","url":"https://json-viewer-ce3.pages.dev"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"JSON Tools","item":"https://json-viewer-ce3.pages.dev"},{"@type":"ListItem","position":2,"name":"JSON Diff","item":"https://json-viewer-ce3.pages.dev/json-diff.html"}]}]
     </script>
+    <link rel="preload" href="style.css" as="style">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <script src="app.js"></script>
-    <script>document.write(getNavHTML('diff'));</script>
+<body data-page="diff">
+    <nav id="site-nav"></nav>
 
     <main>
         <div class="page-header">
@@ -158,7 +160,7 @@
         </details>
     </section>
 
-    <script>document.write(getFooterHTML());</script>
+    <div id="site-footer"></div>
 
     <script>
         let allDiffs = [];
@@ -238,5 +240,6 @@
 
         function setStatus(t, type) { document.getElementById('statusText').textContent = t; document.getElementById('statusDot').className = 'status-dot ' + type; }
     </script>
+    <script src="app.js" defer></script>
 </body>
 </html>

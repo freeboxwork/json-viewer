@@ -23,6 +23,8 @@
     <meta name="description" content="Terms of Service for JSON Tools. Read the conditions for using our free online JSON utilities.">
     <link rel="canonical" href="https://json-viewer-ce3.pages.dev/terms.html">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="icon.png">
     <meta property="og:title" content="Terms of Service - JSON Tools">
     <meta property="og:description" content="Terms of Service for JSON Tools. Read the conditions for using our free online JSON utilities.">
     <meta property="og:type" content="website">
@@ -40,11 +42,11 @@
     <script type="application/ld+json">
     {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"JSON Tools","item":"https://json-viewer-ce3.pages.dev"},{"@type":"ListItem","position":2,"name":"Terms of Service","item":"https://json-viewer-ce3.pages.dev/terms.html"}]}
     </script>
+    <link rel="preload" href="style.css" as="style">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <script src="app.js"></script>
-    <script>document.write(getNavHTML(''));</script>
+<body data-page="">
+    <nav id="site-nav"></nav>
 
     <main>
         <div class="content-page">
@@ -116,6 +118,7 @@
         </div>
     </main>
 
-    <script>document.write(getFooterHTML());</script>
+    <div id="site-footer"></div>
+    <script src="app.js" defer></script>
 </body>
 </html>

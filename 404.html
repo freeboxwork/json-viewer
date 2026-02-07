@@ -28,14 +28,16 @@
     <link rel="alternate" type="application/rss+xml" title="JSON Tools RSS" href="https://json-viewer-ce3.pages.dev/rss.xml">
     <meta name="google-adsense-account" content="ca-pub-8753276846370247">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="icon.png">
     <script type="application/ld+json">
     {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"JSON Tools","item":"https://json-viewer-ce3.pages.dev"},{"@type":"ListItem","position":2,"name":"Page Not Found","item":"https://json-viewer-ce3.pages.dev/404.html"}]}
     </script>
+    <link rel="preload" href="style.css" as="style">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <script src="app.js"></script>
-    <script>document.write(getNavHTML(''));</script>
+<body data-page="">
+    <nav id="site-nav"></nav>
 
     <main>
         <div class="content-page" style="text-align:center;padding:60px 20px;">
@@ -68,6 +70,7 @@
         </div>
     </main>
 
-    <script>document.write(getFooterHTML());</script>
+    <div id="site-footer"></div>
+    <script src="app.js" defer></script>
 </body>
 </html>

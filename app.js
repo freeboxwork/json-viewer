@@ -181,52 +181,49 @@ function syntaxHighlight(json) {
 // ===== Tree View Builder =====
 function buildTreeHTML(data, path = '$', isLast = true) {
     if (data === null) {
-        return `<span class="tree-null" data-path="${path}">null</span>`;
+        return `<span class="tree-type-dot"></span><span class="tree-null" data-path="${path}">null</span>`;
     }
 
     if (typeof data !== 'object') {
         if (typeof data === 'string') {
             const escaped = data.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-            return `<span class="tree-string" data-path="${path}">"${escaped}"</span>`;
+            return `<span class="tree-type-dot"></span><span class="tree-string" data-path="${path}">"${escaped}"</span>`;
         }
         if (typeof data === 'boolean') {
-            return `<span class="tree-boolean" data-path="${path}">${data}</span>`;
+            return `<span class="tree-type-dot"></span><span class="tree-boolean" data-path="${path}">${data}</span>`;
         }
-        return `<span class="tree-number" data-path="${path}">${data}</span>`;
+        return `<span class="tree-type-dot"></span><span class="tree-number" data-path="${path}">${data}</span>`;
     }
 
     const isArray = Array.isArray(data);
     const entries = isArray ? data.map((v, i) => [i, v]) : Object.entries(data);
-    const openBr = isArray ? '[' : '{';
-    const closeBr = isArray ? ']' : '}';
+    const typeBadge = isArray ? '[ ]' : '{ }';
     const count = entries.length;
     const id = 'node-' + Math.random().toString(36).substr(2, 9);
 
     if (count === 0) {
-        return `<span class="tree-bracket">${openBr}${closeBr}</span>`;
+        return `<span class="tree-type-badge">${typeBadge}</span><span class="tree-bracket">${isArray ? '[]' : '{}'}</span>`;
     }
 
     let html = '';
-    html += `<span class="tree-toggle" onclick="toggleTreeNode('${id}')" id="toggle-${id}">\u25BC</span>`;
-    html += `<span class="tree-bracket">${openBr}</span>`;
-    html += `<span class="tree-count">${count} ${isArray ? 'items' : 'keys'}</span>`;
+    html += `<span class="tree-toggle" onclick="toggleTreeNode('${id}')" id="toggle-${id}">\u2212</span>`;
+    html += `<span class="tree-type-badge">${typeBadge}</span>`;
+    html += `<span class="tree-count" style="display:none;">${count} ${isArray ? 'items' : 'keys'}</span>`;
     html += `<div class="tree-node" id="${id}">`;
 
     entries.forEach(([key, value], idx) => {
         const childPath = isArray ? `${path}[${key}]` : `${path}.${key}`;
-        const comma = idx < count - 1 ? '<span class="tree-comma">,</span>' : '';
         html += '<div class="tree-line">';
         if (!isArray) {
-            html += `<span class="tree-key" data-path="${childPath}" onclick="copyPath('${childPath}')" title="Click to copy path">"${key}"</span><span class="tree-colon">:</span> `;
+            html += `<span class="tree-key" data-path="${childPath}" onclick="copyPath('${childPath}')" title="Click to copy path">${key}</span><span class="tree-colon">:</span> `;
         } else {
             html += `<span class="tree-key" data-path="${childPath}" onclick="copyPath('${childPath}')" title="Click to copy path" style="color:var(--text-muted);font-size:0.78rem;">${key}</span><span class="tree-colon">:</span> `;
         }
         html += buildTreeHTML(value, childPath, idx === count - 1);
-        html += comma;
         html += '</div>';
     });
 
-    html += `</div><span class="tree-bracket">${closeBr}</span>`;
+    html += `</div>`;
     return html;
 }
 
@@ -236,7 +233,7 @@ function toggleTreeNode(id) {
     if (!node || !toggle) return;
     const collapsed = node.style.display === 'none';
     node.style.display = collapsed ? '' : 'none';
-    toggle.classList.toggle('collapsed', !collapsed);
+    toggle.textContent = collapsed ? '\u2212' : '+';
     // show/hide count
     const count = toggle.nextElementSibling?.nextElementSibling;
     if (count && count.classList.contains('tree-count')) {
@@ -249,7 +246,7 @@ function toggleAllNodes(expand) {
         node.style.display = expand ? '' : 'none';
     });
     document.querySelectorAll('.tree-toggle').forEach(toggle => {
-        toggle.classList.toggle('collapsed', !expand);
+        toggle.textContent = expand ? '\u2212' : '+';
     });
     document.querySelectorAll('.tree-count').forEach(count => {
         count.style.display = expand ? 'none' : '';

@@ -10,7 +10,7 @@
     <meta property="og:type" content="website">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="fixed-layout">
     <script src="app.js"></script>
     <script>document.write(getNavHTML('viewer'));</script>
 
@@ -48,9 +48,9 @@
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab active" data-tab="input" onclick="switchTab('input')">Input</button>
-            <button class="tab" data-tab="formatted" onclick="switchTab('formatted')">Formatted</button>
-            <button class="tab" data-tab="tree" onclick="switchTab('tree')">Tree View</button>
+            <button class="tab active" data-tab="input" onclick="onTabSwitch('input')">Input</button>
+            <button class="tab" data-tab="formatted" onclick="onTabSwitch('formatted')">Formatted</button>
+            <button class="tab" data-tab="tree" onclick="onTabSwitch('tree')">Tree View</button>
         </div>
 
         <!-- Tab Body -->
@@ -75,24 +75,24 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
             </div>
 
             <!-- Tree View Tab -->
-            <div class="tab-panel" id="panel-tree">
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border-color);flex-wrap:wrap;gap:8px;">
-                    <div class="toolbar-group">
-                        <button class="btn btn-secondary btn-sm" onclick="toggleAllNodes(true)">Expand All</button>
-                        <button class="btn btn-secondary btn-sm" onclick="toggleAllNodes(false)">Collapse All</button>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <div class="search-box" style="width:220px;">
-                            <span class="search-icon">&#128269;</span>
-                            <input type="text" placeholder="Search keys / values..." id="treeSearch" oninput="onSearch(this.value)">
+            <div class="tab-panel tab-panel-flex" id="panel-tree" style="flex-direction:column;height:100%;">
+                <div class="tree-panel-content">
+                    <div class="tree-toolbar">
+                        <div class="toolbar-group">
+                            <button class="btn btn-secondary btn-sm" onclick="toggleAllNodes(true)">Expand All</button>
+                            <button class="btn btn-secondary btn-sm" onclick="toggleAllNodes(false)">Collapse All</button>
                         </div>
-                        <span class="search-count" id="searchCount"></span>
                     </div>
-                </div>
-                <div class="output-area" id="treeOutput" style="border-radius:0 0 var(--radius) var(--radius);">
-                    <div style="color:var(--text-muted);text-align:center;padding-top:140px;">
-                        <div style="font-size:3rem;margin-bottom:12px;">&#127795;</div>
-                        <p>Paste JSON in the Input tab, then click Format to see the tree</p>
+                    <div class="output-area" id="treeOutput">
+                        <div style="color:var(--text-muted);text-align:center;padding-top:140px;">
+                            <div style="font-size:3rem;margin-bottom:12px;">&#127795;</div>
+                            <p>Paste JSON in the Input tab, then switch to Tree View</p>
+                        </div>
+                    </div>
+                    <div class="tree-search-bar">
+                        <span style="color:var(--text-muted);font-size:0.82rem;">&#128269;</span>
+                        <input type="text" class="input" placeholder="Search keys / values..." id="treeSearch" oninput="onSearch(this.value)" style="flex:1;padding:6px 10px;font-size:0.82rem;">
+                        <span class="search-count" id="searchCount"></span>
                     </div>
                 </div>
             </div>
@@ -122,6 +122,38 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
             const size = new Blob([input.value]).size;
             document.getElementById('inputSize').textContent = input.value ? formatBytes(size) : '';
         });
+
+        // Tab switch with auto-parsing
+        function onTabSwitch(tabId) {
+            if ((tabId === 'tree' || tabId === 'formatted') && !parsedData) {
+                const text = input.value.trim();
+                if (text) {
+                    const result = parseJSON(text);
+                    if (result.success) {
+                        parsedData = result.data;
+                        const indent = getIndent();
+                        const formatted = JSON.stringify(parsedData, null, indent);
+
+                        // Update formatted view
+                        document.getElementById('formattedOutput').innerHTML =
+                            '<div class="code-view">' + syntaxHighlight(formatted) + '</div>';
+
+                        // Update tree view
+                        document.getElementById('treeOutput').innerHTML =
+                            '<div class="tree-view">' + buildTreeHTML(parsedData) + '</div>';
+
+                        const stats = getJSONStats(parsedData);
+                        showStatus('Valid JSON \u2014 ' + stats.keys + ' keys, ' + stats.objects + ' objects, ' + stats.arrays + ' arrays, depth ' + stats.depth, 'valid');
+
+                        const size = new Blob([formatted]).size;
+                        document.getElementById('inputSize').textContent = formatBytes(size);
+                    } else {
+                        showStatus('Error: ' + result.error.message + (result.error.line ? ' (line ' + result.error.line + ', col ' + result.error.col + ')' : ''), 'invalid');
+                    }
+                }
+            }
+            switchTab(tabId);
+        }
 
         function getIndent() {
             const v = document.getElementById('indentSelect').value;
@@ -184,7 +216,7 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
         function clearAll() {
             input.value = '';
             document.getElementById('formattedOutput').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">{ }</div><p>Paste JSON in the Input tab, then click Format</p></div>`;
-            document.getElementById('treeOutput').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">&#127795;</div><p>Paste JSON in the Input tab, then click Format to see the tree</p></div>`;
+            document.getElementById('treeOutput').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">&#127795;</div><p>Paste JSON in the Input tab, then switch to Tree View</p></div>`;
             parsedData = null;
             document.getElementById('inputSize').textContent = '';
             document.getElementById('searchCount').textContent = '';

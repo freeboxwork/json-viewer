@@ -524,23 +524,30 @@ body.fixed-layout .status-bar {
     margin-left: 20px;
 }
 
-/* Vertical guide line connecting children (only when 2+ siblings) */
-.tree-node::before {
+/* Vertical guide line — per tree-line segments instead of one long line */
+/* Non-last children: vertical line extends full height to reach next sibling */
+.tree-node > .tree-line:not(:last-child)::after {
     content: '';
     position: absolute;
     top: 0;
     left: -12px;
-    bottom: 10px;
+    bottom: 0;
     border-left: 1px solid var(--border-color);
 }
 
-/* Hide vertical line when tree-node has only one child */
-.tree-node:has(> .tree-line:only-child)::before {
-    display: none;
+/* Last child: vertical line only extends to the horizontal branch point */
+.tree-node > .tree-line:last-child::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -12px;
+    height: 9px;
+    border-left: 1px solid var(--border-color);
 }
 
-.tree-node:hover > .tree-node::before {
-    border-left-color: var(--border-hover);
+/* Single child: no vertical line needed */
+.tree-node > .tree-line:only-child::after {
+    display: none;
 }
 
 /* Horizontal branch line from vertical guide to each child */

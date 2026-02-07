@@ -610,7 +610,20 @@ function getNavHTML(activePage) {
 function toggleDropdown(e, id) {
     e.stopPropagation();
     const dd = document.getElementById(id);
-    if (dd) dd.classList.toggle('open');
+    if (!dd) return;
+    const wasOpen = dd.classList.contains('open');
+    // Close all dropdowns first
+    document.querySelectorAll('.nav-dropdown.open').forEach(d => d.classList.remove('open'));
+    if (wasOpen) return;
+    dd.classList.add('open');
+    // Position the menu below the toggle button using fixed positioning
+    const btn = dd.querySelector('.nav-dropdown-toggle');
+    const menu = dd.querySelector('.nav-dropdown-menu');
+    if (btn && menu) {
+        const rect = btn.getBoundingClientRect();
+        menu.style.top = rect.bottom + 4 + 'px';
+        menu.style.left = rect.left + 'px';
+    }
 }
 
 function getFooterHTML() {

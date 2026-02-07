@@ -159,13 +159,8 @@ body.fixed-layout .site-footer {
     display: flex;
     align-items: center;
     gap: 2px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
     padding: 4px 0;
 }
-
-.nav-links::-webkit-scrollbar { display: none; }
 
 .nav-links a {
     color: var(--text-secondary);

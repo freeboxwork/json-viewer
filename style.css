@@ -524,7 +524,7 @@ body.fixed-layout .status-bar {
     margin-left: 20px;
 }
 
-/* Vertical guide line connecting children */
+/* Vertical guide line connecting children (only when 2+ siblings) */
 .tree-node::before {
     content: '';
     position: absolute;
@@ -532,6 +532,11 @@ body.fixed-layout .status-bar {
     left: -12px;
     bottom: 10px;
     border-left: 1px solid var(--border-color);
+}
+
+/* Hide vertical line when tree-node has only one child */
+.tree-node:has(> .tree-line:only-child)::before {
+    display: none;
 }
 
 .tree-node:hover > .tree-node::before {

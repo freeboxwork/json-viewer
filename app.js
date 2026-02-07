@@ -181,18 +181,18 @@ function syntaxHighlight(json) {
 // ===== Tree View Builder =====
 function buildTreeHTML(data, path = '$', isLast = true) {
     if (data === null) {
-        return `<span class="tree-type-dot"></span><span class="tree-null" data-path="${path}">null</span>`;
+        return `<span class="tree-null" data-path="${path}">null</span>`;
     }
 
     if (typeof data !== 'object') {
         if (typeof data === 'string') {
             const escaped = data.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-            return `<span class="tree-type-dot"></span><span class="tree-string" data-path="${path}">"${escaped}"</span>`;
+            return `<span class="tree-string" data-path="${path}">"${escaped}"</span>`;
         }
         if (typeof data === 'boolean') {
-            return `<span class="tree-type-dot"></span><span class="tree-boolean" data-path="${path}">${data}</span>`;
+            return `<span class="tree-boolean" data-path="${path}">${data}</span>`;
         }
-        return `<span class="tree-type-dot"></span><span class="tree-number" data-path="${path}">${data}</span>`;
+        return `<span class="tree-number" data-path="${path}">${data}</span>`;
     }
 
     const isArray = Array.isArray(data);

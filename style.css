@@ -514,8 +514,8 @@ body.fixed-layout .status-bar {
 /* ===== Tree View ===== */
 .tree-view {
     font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
-    font-size: 0.8rem;
-    line-height: 20px;
+    font-size: 0.72rem;
+    line-height: 18px;
     padding: 4px 0;
 }
 
@@ -542,7 +542,7 @@ body.fixed-layout .status-bar {
 .tree-node > .tree-line::before {
     content: '';
     position: absolute;
-    top: 10px;
+    top: 9px;
     left: -12px;
     width: 8px;
     border-top: 1px solid var(--border-color);
@@ -607,17 +607,7 @@ body.fixed-layout .status-bar {
     font-weight: 700;
 }
 
-.tree-type-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--text-muted);
-    margin-right: 6px;
-    vertical-align: middle;
-    flex-shrink: 0;
-    margin-top: 6px;
-}
+/* tree-type-dot removed */
 
 .tree-key {
     color: var(--json-key);

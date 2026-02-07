@@ -285,7 +285,7 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
 
         // Tab switch with auto-parsing
         function onTabSwitch(tabId) {
-            if ((tabId === 'tree' || tabId === 'formatted') && !parsedData) {
+            if (tabId === 'tree' || tabId === 'formatted') {
                 const text = input.value.trim();
                 if (text) {
                     const result = parseJSON(text);
@@ -301,6 +301,7 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
                         // Update tree view
                         document.getElementById('treeOutput').innerHTML =
                             '<div class="tree-view">' + buildTreeHTML(parsedData) + '</div>';
+                        setupTreeClickHandler('treeOutput');
 
                         const stats = getJSONStats(parsedData);
                         showStatus('Valid JSON \u2014 ' + stats.keys + ' keys, ' + stats.objects + ' objects, ' + stats.arrays + ' arrays, depth ' + stats.depth, 'valid');

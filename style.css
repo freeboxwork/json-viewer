@@ -514,8 +514,8 @@ body.fixed-layout .status-bar {
 /* ===== Tree View ===== */
 .tree-view {
     font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
-    font-size: 0.72rem;
-    line-height: 18px;
+    font-size: 0.65rem;
+    line-height: 16px;
     padding: 4px 0;
 }
 
@@ -541,7 +541,7 @@ body.fixed-layout .status-bar {
     position: absolute;
     top: 0;
     left: -12px;
-    height: 9px;
+    height: 8px;
     border-left: 1px solid var(--border-color);
 }
 
@@ -554,7 +554,7 @@ body.fixed-layout .status-bar {
 .tree-node > .tree-line::before {
     content: '';
     position: absolute;
-    top: 9px;
+    top: 8px;
     left: -12px;
     width: 8px;
     border-top: 1px solid var(--border-color);
@@ -614,10 +614,10 @@ body.fixed-layout .status-bar {
 
 /* {} [] type badges */
 .tree-type-badge {
-    color: var(--text-muted);
-    font-size: 0.72rem;
+    color: var(--accent);
+    font-size: 0.7rem;
     margin-right: 4px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 /* tree-type-dot removed */

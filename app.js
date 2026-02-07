@@ -179,7 +179,7 @@ function syntaxHighlight(json) {
 }
 
 // ===== Tree View Builder =====
-function buildTreeHTML(data, path = '$', isLast = true, keyHtml = '') {
+function buildTreeHTML(data, path = '$', isLast = true, keyHtml = '', depth = 0) {
     if (data === null) {
         return `<span class="tree-null" data-path="${path}">null</span>`;
     }
@@ -205,11 +205,17 @@ function buildTreeHTML(data, path = '$', isLast = true, keyHtml = '') {
         return `<span class="tree-type-badge">${typeBadge}</span>${keyHtml}<span class="tree-bracket">${isArray ? '[]' : '{}'}</span>`;
     }
 
-    const toggleHtml = `<span class="tree-toggle" onclick="toggleTreeNode('${id}')" id="toggle-${id}">\u2212</span>`;
-    const badgeHtml = `<span class="tree-type-badge">${typeBadge}</span>`;
-    const countHtml = `<span class="tree-count" style="display:none;">${count} ${isArray ? 'items' : 'keys'}</span>`;
+    // depth >= 1: start collapsed (show count, hide children)
+    const collapsed = depth >= 1;
+    const toggleChar = collapsed ? '+' : '\u2212';
+    const nodeDisplay = collapsed ? 'display:none;' : '';
+    const countDisplay = collapsed ? '' : 'display:none;';
 
-    let html = `<div class="tree-node" id="${id}">`;
+    const toggleHtml = `<span class="tree-toggle" onclick="toggleTreeNode('${id}')" id="toggle-${id}">${toggleChar}</span>`;
+    const badgeHtml = `<span class="tree-type-badge">${typeBadge}</span>`;
+    const countHtml = `<span class="tree-count" style="${countDisplay}">${count} ${isArray ? 'items' : 'keys'}</span>`;
+
+    let html = `<div class="tree-node" id="${id}" style="${nodeDisplay}">`;
 
     entries.forEach(([key, value], idx) => {
         const childPath = isArray ? `${path}[${key}]` : `${path}.${key}`;
@@ -226,7 +232,7 @@ function buildTreeHTML(data, path = '$', isLast = true, keyHtml = '') {
             } else {
                 childKeyHtml = `<span class="tree-key" data-path="${childPath}" onclick="event.stopPropagation();copyPath('${escapedPath}')" title="Click to copy path" style="color:var(--text-muted);font-size:0.78rem;">${key}</span>`;
             }
-            html += buildTreeHTML(value, childPath, idx === count - 1, childKeyHtml);
+            html += buildTreeHTML(value, childPath, idx === count - 1, childKeyHtml, depth + 1);
         } else {
             // Primitives: key : value
             if (!isArray) {
@@ -234,7 +240,7 @@ function buildTreeHTML(data, path = '$', isLast = true, keyHtml = '') {
             } else {
                 html += `<span class="tree-key" data-path="${childPath}" onclick="event.stopPropagation();copyPath('${escapedPath}')" title="Click to copy path" style="color:var(--text-muted);font-size:0.78rem;">${key}</span><span class="tree-colon">:</span>`;
             }
-            html += buildTreeHTML(value, childPath, idx === count - 1);
+            html += buildTreeHTML(value, childPath, idx === count - 1, '', depth + 1);
         }
 
         html += '</div>';

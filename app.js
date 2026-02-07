@@ -213,11 +213,12 @@ function buildTreeHTML(data, path = '$', isLast = true) {
 
     entries.forEach(([key, value], idx) => {
         const childPath = isArray ? `${path}[${key}]` : `${path}.${key}`;
-        html += '<div class="tree-line">';
+        const escapedPath = childPath.replace(/'/g, "\\'");
+        html += `<div class="tree-line" data-path="${childPath}">`;
         if (!isArray) {
-            html += `<span class="tree-key" data-path="${childPath}" onclick="copyPath('${childPath}')" title="Click to copy path">${key}</span><span class="tree-colon">:</span> `;
+            html += `<span class="tree-key" data-path="${childPath}" onclick="event.stopPropagation();copyPath('${escapedPath}')" title="Click to copy path">${key}</span><span class="tree-colon">:</span> `;
         } else {
-            html += `<span class="tree-key" data-path="${childPath}" onclick="copyPath('${childPath}')" title="Click to copy path" style="color:var(--text-muted);font-size:0.78rem;">${key}</span><span class="tree-colon">:</span> `;
+            html += `<span class="tree-key" data-path="${childPath}" onclick="event.stopPropagation();copyPath('${escapedPath}')" title="Click to copy path" style="color:var(--text-muted);font-size:0.78rem;">${key}</span><span class="tree-colon">:</span> `;
         }
         html += buildTreeHTML(value, childPath, idx === count - 1);
         html += '</div>';
@@ -258,9 +259,82 @@ function copyPath(path) {
     showToast(`Path copied: ${path}`);
 }
 
+// ===== Node Selection =====
+function selectTreeLine(lineEl) {
+    if (!lineEl) return;
+    // Remove previous selection
+    document.querySelectorAll('.tree-line.selected').forEach(el => el.classList.remove('selected'));
+    lineEl.classList.add('selected');
+
+    const path = lineEl.getAttribute('data-path') || '';
+    const keyEl = lineEl.querySelector('.tree-key');
+    const key = keyEl ? keyEl.textContent : '';
+
+    // Find value
+    let value = '';
+    let type = '';
+    const valueEl = lineEl.querySelector(':scope > .tree-string, :scope > .tree-number, :scope > .tree-boolean, :scope > .tree-null');
+    if (valueEl) {
+        value = valueEl.textContent;
+        if (valueEl.classList.contains('tree-string')) type = 'string';
+        else if (valueEl.classList.contains('tree-number')) type = 'number';
+        else if (valueEl.classList.contains('tree-boolean')) type = 'boolean';
+        else if (valueEl.classList.contains('tree-null')) type = 'null';
+    } else {
+        const badge = lineEl.querySelector(':scope > .tree-type-badge');
+        if (badge) {
+            type = badge.textContent.includes('[') ? 'array' : 'object';
+            const countEl = lineEl.querySelector(':scope > .tree-count');
+            value = type + (countEl ? ' (' + countEl.textContent + ')' : '');
+        }
+    }
+
+    // Show detail panel
+    const panel = document.getElementById('nodeDetail');
+    if (panel) {
+        panel.classList.add('visible');
+        const dp = document.getElementById('detailPath');
+        const dk = document.getElementById('detailKey');
+        const dv = document.getElementById('detailValue');
+        if (dp) dp.textContent = path;
+        if (dk) dk.textContent = key;
+        if (dv) dv.textContent = value;
+    }
+}
+
+function copyDetail(what) {
+    const el = document.getElementById('detail' + what.charAt(0).toUpperCase() + what.slice(1));
+    if (el && el.textContent) {
+        copyToClipboard(el.textContent);
+    }
+}
+
+function setupTreeClickHandler(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.addEventListener('click', function(e) {
+        // Don't interfere with toggle buttons
+        if (e.target.classList.contains('tree-toggle')) return;
+        // Don't interfere with key path copy
+        if (e.target.classList.contains('tree-key')) return;
+        // Don't interfere with text selection on values
+        const sel = window.getSelection();
+        if (sel && sel.toString().length > 0) return;
+
+        const line = e.target.closest('.tree-line');
+        if (line) selectTreeLine(line);
+    });
+}
+
 // ===== Search in Tree =====
+let _searchMatches = [];
+let _searchIndex = -1;
+
 function searchTree(keyword) {
     // Clear previous highlights
+    _searchMatches = [];
+    _searchIndex = -1;
+    document.querySelectorAll('.tree-highlight-current').forEach(el => el.classList.remove('tree-highlight-current'));
     document.querySelectorAll('.tree-highlight').forEach(el => {
         const parent = el.parentNode;
         parent.replaceChild(document.createTextNode(el.textContent), el);
@@ -275,7 +349,9 @@ function searchTree(keyword) {
     function highlightNode(el) {
         if (el.nodeType === 3) { // Text node
             const text = el.textContent;
+            regex.lastIndex = 0;
             if (regex.test(text)) {
+                regex.lastIndex = 0;
                 const span = document.createElement('span');
                 span.innerHTML = text.replace(regex, '<span class="tree-highlight">$1</span>');
                 el.parentNode.replaceChild(span, el);
@@ -290,8 +366,45 @@ function searchTree(keyword) {
     if (treeContainer) highlightNode(treeContainer);
 
     // Expand all nodes to show results
-    if (count > 0) toggleAllNodes(true);
+    if (count > 0) {
+        toggleAllNodes(true);
+        _searchMatches = Array.from(document.querySelectorAll('.tree-highlight'));
+        if (_searchMatches.length > 0) {
+            _searchIndex = 0;
+            _highlightCurrent();
+        }
+    }
     return count;
+}
+
+function _highlightCurrent() {
+    document.querySelectorAll('.tree-highlight-current').forEach(el => el.classList.remove('tree-highlight-current'));
+    if (_searchMatches.length > 0 && _searchIndex >= 0 && _searchIndex < _searchMatches.length) {
+        const current = _searchMatches[_searchIndex];
+        current.classList.add('tree-highlight-current');
+        current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function searchNext() {
+    if (_searchMatches.length === 0) return;
+    _searchIndex = (_searchIndex + 1) % _searchMatches.length;
+    _highlightCurrent();
+    _updateSearchCounter();
+}
+
+function searchPrev() {
+    if (_searchMatches.length === 0) return;
+    _searchIndex = (_searchIndex - 1 + _searchMatches.length) % _searchMatches.length;
+    _highlightCurrent();
+    _updateSearchCounter();
+}
+
+function _updateSearchCounter() {
+    const el = document.getElementById('searchCount');
+    if (el && _searchMatches.length > 0) {
+        el.textContent = (_searchIndex + 1) + ' / ' + _searchMatches.length;
+    }
 }
 
 // ===== Format Size =====

@@ -83,6 +83,24 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
                             <button class="btn btn-secondary btn-sm" onclick="toggleAllNodes(false)">Collapse All</button>
                         </div>
                     </div>
+                    <!-- Node detail panel (shown on tree-line click) -->
+                    <div class="node-detail" id="nodeDetail">
+                        <div class="node-detail-item">
+                            <span class="node-detail-label">Path:</span>
+                            <span class="node-detail-val" id="detailPath"></span>
+                            <button class="node-detail-copy" onclick="copyDetail('path')" title="Copy path">Copy</button>
+                        </div>
+                        <div class="node-detail-item">
+                            <span class="node-detail-label">Key:</span>
+                            <span class="node-detail-val" id="detailKey"></span>
+                            <button class="node-detail-copy" onclick="copyDetail('key')" title="Copy key">Copy</button>
+                        </div>
+                        <div class="node-detail-item">
+                            <span class="node-detail-label">Value:</span>
+                            <span class="node-detail-val" id="detailValue"></span>
+                            <button class="node-detail-copy" onclick="copyDetail('value')" title="Copy value">Copy</button>
+                        </div>
+                    </div>
                     <div class="output-area" id="treeOutput">
                         <div style="color:var(--text-muted);text-align:center;padding-top:140px;">
                             <div style="font-size:3rem;margin-bottom:12px;">&#127795;</div>
@@ -90,8 +108,11 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
                         </div>
                     </div>
                     <div class="tree-search-bar">
-                        <span style="color:var(--text-muted);font-size:0.82rem;">&#128269;</span>
-                        <input type="text" class="input" placeholder="Search keys / values..." id="treeSearch" oninput="onSearch(this.value)" style="flex:1;padding:6px 10px;font-size:0.82rem;">
+                        <span style="color:var(--text-muted);font-size:0.82rem;">Search:</span>
+                        <input type="text" class="input" placeholder="Search keys / values..." id="treeSearch" onkeydown="if(event.key==='Enter'){event.preventDefault();searchNext();}" oninput="onSearch(this.value)" style="flex:1;padding:6px 10px;font-size:0.82rem;">
+                        <button class="btn-search" onclick="searchNext()">GO!</button>
+                        <button class="btn-search" onclick="searchPrev()">&#8593; Prev</button>
+                        <button class="btn-search" onclick="searchNext()">&#8595; Next</button>
                         <span class="search-count" id="searchCount"></span>
                     </div>
                 </div>
@@ -116,6 +137,9 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
 
         // Setup textarea as drop target
         setupTextareaDrop('jsonInput', formatJSON);
+
+        // Setup tree click handler for node selection
+        setupTreeClickHandler('treeOutput');
 
         // Update input size indicator
         input.addEventListener('input', () => {
@@ -198,7 +222,13 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
 
         function onSearch(keyword) {
             const count = searchTree(keyword);
-            document.getElementById('searchCount').textContent = keyword ? `${count} found` : '';
+            if (keyword && count > 0) {
+                document.getElementById('searchCount').textContent = '1 / ' + count;
+            } else if (keyword) {
+                document.getElementById('searchCount').textContent = '0 found';
+            } else {
+                document.getElementById('searchCount').textContent = '';
+            }
         }
 
         function copyOutput() {
@@ -220,8 +250,13 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
             parsedData = null;
             document.getElementById('inputSize').textContent = '';
             document.getElementById('searchCount').textContent = '';
+            document.getElementById('treeSearch').value = '';
+            const detail = document.getElementById('nodeDetail');
+            if (detail) detail.classList.remove('visible');
             showStatus('Ready', 'neutral');
             switchTab('input');
+            // Re-register click handler after DOM reset
+            setupTreeClickHandler('treeOutput');
         }
 
         function loadSample() {

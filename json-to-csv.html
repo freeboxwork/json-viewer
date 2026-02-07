@@ -66,17 +66,70 @@
             const result = parseJSON(text);
             if (!result.success) { setStatus(`Error: ${result.error.message}`, 'invalid'); return; }
             let data = result.data;
+            let statusMsg = '';
             if (!Array.isArray(data)) {
-                const arrays = Object.values(data).filter(v => Array.isArray(v));
-                data = arrays.length > 0 ? arrays[0] : [data];
+                // Find all arrays of objects in the data (top-level keys)
+                const arrayEntries = [];
+                function findArrays(obj, path) {
+                    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return;
+                    for (const [key, value] of Object.entries(obj)) {
+                        const p = path ? path + '.' + key : key;
+                        if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'object' && value[0] !== null) {
+                            arrayEntries.push({ path: p, data: value, count: value.length });
+                        } else if (value && typeof value === 'object' && !Array.isArray(value)) {
+                            findArrays(value, p);
+                        }
+                    }
+                }
+                findArrays(data, '');
+
+                if (arrayEntries.length > 0) {
+                    // Build array selector if not already present
+                    buildArraySelector(arrayEntries);
+                    // Use selected array or the largest one by default
+                    const selectedPath = document.getElementById('arraySelect')?.value;
+                    const selected = arrayEntries.find(a => a.path === selectedPath) || arrayEntries.sort((a, b) => b.count - a.count)[0];
+                    data = selected.data;
+                    statusMsg = `"${selected.path}" array (${selected.count} items)`;
+                } else {
+                    // No arrays found - flatten entire object as a single row
+                    data = [data];
+                    statusMsg = 'Flattened root object as 1 row';
+                }
+            } else {
+                statusMsg = `${data.length} items`;
             }
             if (data.length === 0) { setStatus('Empty array', 'invalid'); return; }
             const flattened = data.map(item => flattenObject(item));
             csvText = Papa.unparse(flattened, { delimiter: document.getElementById('delimiter').value, header: document.getElementById('includeHeader').checked });
             document.getElementById('csvOutput').value = csvText;
             renderTable(flattened);
-            setStatus(`Converted ${flattened.length} rows`, 'valid');
+            setStatus(`Converted ${flattened.length} rows from ${statusMsg}`, 'valid');
             switchTab('output');
+        }
+
+        function buildArraySelector(entries) {
+            let container = document.getElementById('arraySelectorContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'arraySelectorContainer';
+                container.className = 'option-group';
+                container.style.cssText = 'margin-left:8px;';
+                container.innerHTML = '<label style="font-size:0.82rem;color:var(--text-secondary);font-weight:600;">Source:</label>';
+                const select = document.createElement('select');
+                select.id = 'arraySelect';
+                select.className = 'select';
+                select.onchange = convertToCSV;
+                container.appendChild(select);
+                // Insert after the first toolbar separator
+                const toolbar = document.querySelector('.toolbar');
+                const firstSep = toolbar.querySelectorAll('.toolbar-separator')[1];
+                if (firstSep) toolbar.insertBefore(container, firstSep);
+                else toolbar.appendChild(container);
+            }
+            const select = document.getElementById('arraySelect');
+            const currentVal = select.value;
+            select.innerHTML = entries.map(e => `<option value="${e.path}" ${e.path === currentVal ? 'selected' : ''}>${e.path} (${e.count} items)</option>`).join('');
         }
 
         function flattenObject(obj, prefix = '') {

@@ -76,13 +76,16 @@ body {
 /* Fixed frame layout - page does not scroll, only inner frames scroll */
 body.fixed-layout {
     height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 body.fixed-layout main {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    height: calc(100vh - 56px);
+    flex-shrink: 0;
     flex: 1;
     min-height: 0;
     padding: 12px 20px;
@@ -117,7 +120,7 @@ body.fixed-layout .tab-panel .output-area {
 }
 
 body.fixed-layout .site-footer {
-    display: none;
+    display: flex;
 }
 
 /* ===== Navigation ===== */

@@ -279,6 +279,37 @@ function toggleAllNodes(expand) {
     });
 }
 
+// ===== Tree Font Size Control =====
+const TREE_FONT_MIN = 8;
+const TREE_FONT_MAX = 18;
+const TREE_FONT_DEFAULT = 10;
+
+function getTreeFontSize() {
+    return parseInt(localStorage.getItem('json-tools-tree-font-size')) || TREE_FONT_DEFAULT;
+}
+
+function applyTreeFontSize(size) {
+    const tv = document.querySelector('.tree-view');
+    if (tv) {
+        tv.style.fontSize = size + 'px';
+        tv.style.lineHeight = (size + 6) + 'px';
+    }
+    const label = document.getElementById('fontSizeLabel');
+    if (label) label.textContent = size + 'px';
+}
+
+function changeTreeFontSize(delta) {
+    let size = getTreeFontSize() + delta;
+    size = Math.max(TREE_FONT_MIN, Math.min(TREE_FONT_MAX, size));
+    localStorage.setItem('json-tools-tree-font-size', size);
+    applyTreeFontSize(size);
+}
+
+function initTreeFontSize() {
+    const size = getTreeFontSize();
+    applyTreeFontSize(size);
+}
+
 function copyPath(path) {
     copyToClipboard(path);
     showToast(`Path copied: ${path}`);

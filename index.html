@@ -168,6 +168,11 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
                             <button class="btn btn-secondary btn-sm" onclick="toggleAllNodes(true)">Expand All</button>
                             <button class="btn btn-secondary btn-sm" onclick="toggleAllNodes(false)">Collapse All</button>
                         </div>
+                        <div class="toolbar-group font-size-ctrl">
+                            <button class="btn btn-secondary btn-sm" onclick="changeTreeFontSize(-1)" title="Decrease font size">A−</button>
+                            <span class="font-size-label" id="fontSizeLabel">10px</span>
+                            <button class="btn btn-secondary btn-sm" onclick="changeTreeFontSize(1)" title="Increase font size">A+</button>
+                        </div>
                     </div>
                     <!-- Node detail panel (shown on tree-line click) -->
                     <div class="node-detail" id="nodeDetail">
@@ -281,6 +286,9 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
         // Setup tree click handler for node selection
         setupTreeClickHandler('treeOutput');
 
+        // Init tree font size label
+        initTreeFontSize();
+
         // Update input size indicator
         input.addEventListener('input', () => {
             const size = new Blob([input.value]).size;
@@ -306,6 +314,7 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
                         document.getElementById('treeOutput').innerHTML =
                             '<div class="tree-view">' + buildTreeHTML(parsedData) + '</div>';
                         setupTreeClickHandler('treeOutput');
+                        initTreeFontSize();
 
                         const stats = getJSONStats(parsedData);
                         showStatus('Valid JSON \u2014 ' + stats.keys + ' keys, ' + stats.objects + ' objects, ' + stats.arrays + ' arrays, depth ' + stats.depth, 'valid');
@@ -350,6 +359,7 @@ Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
 
             // Update tree view
             document.getElementById('treeOutput').innerHTML = `<div class="tree-view">${buildTreeHTML(parsedData)}</div>`;
+            initTreeFontSize();
 
             // Switch to formatted tab
             switchTab('formatted');

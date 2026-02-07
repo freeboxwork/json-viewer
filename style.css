@@ -1028,6 +1028,21 @@ body.fixed-layout .status-bar {
     flex-shrink: 0;
 }
 
+.font-size-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.font-size-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    min-width: 32px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    user-select: none;
+}
+
 .tree-panel-content .output-area {
     flex: 1;
     overflow: auto;

@@ -112,6 +112,7 @@
 
     <div id="site-footer"></div>
 
+    <script src="app.js"></script>
     <script>
         let jsonResult = '';
         setupTextareaDrop('csvInput', convertToJSON);
@@ -137,6 +138,5 @@
         function clearAll() { document.getElementById('csvInput').value = ''; document.getElementById('jsonOutput').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">[ ]</div><p>JSON output will appear here</p></div>`; jsonResult = ''; setStatus('Ready', 'neutral'); switchTab('input'); }
         function setStatus(t, type) { document.getElementById('statusText').textContent = t; document.getElementById('statusDot').className = 'status-dot ' + type; }
     </script>
-    <script src="app.js" defer></script>
 </body>
 </html>

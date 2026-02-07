@@ -130,6 +130,7 @@
 
     <div id="site-footer"></div>
 
+    <script src="app.js"></script>
     <script>
         const input = document.getElementById('jsonInput');
         const output = document.getElementById('jsonOutput');
@@ -171,6 +172,5 @@
         function clearMinify() { input.value = ''; output.value = ''; minifiedText = ''; document.getElementById('sizeBar').style.display = 'none'; setStatus('Ready', 'neutral'); switchTab('input'); }
         function setStatus(text, type) { document.getElementById('statusText').textContent = text; document.getElementById('statusDot').className = 'status-dot ' + type; }
     </script>
-    <script src="app.js" defer></script>
 </body>
 </html>

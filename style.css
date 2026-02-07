@@ -337,7 +337,7 @@ body.fixed-layout .status-bar {
     border: 1px solid var(--border-color);
     border-radius: 0 0 var(--radius) var(--radius);
     padding: 14px;
-    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
     font-size: 0.88rem;
     line-height: 1.7;
     resize: vertical;
@@ -366,7 +366,7 @@ body.fixed-layout .status-bar {
     border-radius: 0 0 var(--radius) var(--radius);
     padding: 14px;
     overflow: auto;
-    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
     font-size: 0.88rem;
     line-height: 1.7;
     min-height: 500px;
@@ -513,7 +513,7 @@ body.fixed-layout .status-bar {
 
 /* ===== Tree View ===== */
 .tree-view {
-    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
     font-size: 0.65rem;
     line-height: 16px;
     padding: 4px 0;
@@ -676,7 +676,7 @@ body.fixed-layout .status-bar {
 
 .node-detail-val {
     color: var(--text-primary);
-    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
     max-width: 400px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -761,7 +761,7 @@ body.fixed-layout .status-bar {
 
 /* ===== Syntax Highlighted Code ===== */
 .code-view {
-    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
     font-size: 0.88rem;
     line-height: 1.7;
     white-space: pre-wrap;
@@ -1339,7 +1339,7 @@ summary:focus-visible {
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 0.85rem;
-    font-family: 'Consolas', 'Monaco', monospace;
+    font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
     color: var(--accent);
 }
 

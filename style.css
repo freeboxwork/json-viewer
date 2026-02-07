@@ -560,11 +560,24 @@ body.fixed-layout .status-bar {
     min-height: 20px;
 }
 
+/* Only highlight the deepest hovered tree-line, not ancestors */
 .tree-line:hover {
+    background: rgba(255,255,255,0.04);
+}
+.tree-line:hover .tree-line {
+    background: transparent;
+}
+.tree-line:hover .tree-line:hover {
     background: rgba(255,255,255,0.04);
 }
 
 [data-theme="light"] .tree-line:hover {
+    background: rgba(0,0,0,0.03);
+}
+[data-theme="light"] .tree-line:hover .tree-line {
+    background: transparent;
+}
+[data-theme="light"] .tree-line:hover .tree-line:hover {
     background: rgba(0,0,0,0.03);
 }
 

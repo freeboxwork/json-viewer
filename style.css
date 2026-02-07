@@ -1110,10 +1110,42 @@ body.fixed-layout .status-bar {
     max-width: 1400px;
     margin: 0 auto;
     display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.footer-tools {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.footer-tools strong {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
+.footer-tools a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.75rem;
+    transition: color var(--transition);
+}
+
+.footer-tools a:hover {
+    color: var(--accent);
+}
+
+.footer-bottom {
+    display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 8px;
 }
 
 .footer-links {

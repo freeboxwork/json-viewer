@@ -631,12 +631,27 @@ function getFooterHTML() {
     return `
     <footer class="site-footer">
         <div class="footer-inner">
-            <span class="footer-copy">&copy; 2026 JSON Tools &mdash; All processing is done in your browser. Your data stays private.</span>
-            <div class="footer-links">
-                <a href="about.html">About</a>
-                <a href="privacy-policy.html">Privacy Policy</a>
-                <a href="terms.html">Terms of Service</a>
-                <a href="sitemap.xml">Sitemap</a>
+            <div class="footer-tools">
+                <strong>Tools:</strong>
+                <a href="index.html">JSON Viewer</a>
+                <a href="json-validator.html">Validator</a>
+                <a href="json-minify.html">Minifier</a>
+                <a href="json-diff.html">Diff</a>
+                <a href="json-to-csv.html">JSON→CSV</a>
+                <a href="csv-to-json.html">CSV→JSON</a>
+                <a href="json-to-xml.html">JSON→XML</a>
+                <a href="json-to-yaml.html">JSON→YAML</a>
+                <a href="json-to-typescript.html">JSON→TS</a>
+            </div>
+            <div class="footer-bottom">
+                <span class="footer-copy">&copy; 2026 JSON Tools &mdash; All processing is done in your browser. Your data stays private.</span>
+                <div class="footer-links">
+                    <a href="about.html">About</a>
+                    <a href="privacy-policy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                    <a href="sitemap.xml">Sitemap</a>
+                    <a href="rss.xml" title="RSS Feed">RSS</a>
+                </div>
             </div>
         </div>
     </footer>`;

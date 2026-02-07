@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://json-viewer-ce3.pages.dev/index.html</loc>
+    <loc>https://json-viewer-ce3.pages.dev/</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -10,19 +10,19 @@
     <loc>https://json-viewer-ce3.pages.dev/json-validator.html</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://json-viewer-ce3.pages.dev/json-minify.html</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://json-viewer-ce3.pages.dev/json-diff.html</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://json-viewer-ce3.pages.dev/json-to-csv.html</loc>
@@ -64,12 +64,12 @@
     <loc>https://json-viewer-ce3.pages.dev/privacy-policy.html</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://json-viewer-ce3.pages.dev/terms.html</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.4</priority>
   </url>
 </urlset>

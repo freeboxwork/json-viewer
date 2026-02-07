@@ -598,6 +598,7 @@ function getNavHTML(activePage) {
                     </button>
                     <div class="nav-dropdown-menu">${convertLinks}</div>
                 </div>
+                <a href="about.html#feedback" class="${activePage === 'feedback' ? 'active' : ''}" style="color:var(--text-muted);font-size:0.78rem;">Feedback</a>
             </div>
             <div class="nav-right">
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>

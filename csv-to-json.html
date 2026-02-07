@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSV to JSON Converter Online - Free CSV to JSON Tool</title>
     <meta name="description" content="Convert CSV data to JSON format online for free. Upload CSV files, preview as table, and get clean JSON output.">
-    <meta property="og:title" content="CSV to JSON Converter Online">
-    <meta property="og:description" content="Convert CSV data to JSON format with preview and download.">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
@@ -23,154 +21,59 @@
         <div class="toolbar">
             <button class="btn btn-primary" onclick="convertToJSON()">&#128260; Convert to JSON</button>
             <div class="toolbar-separator"></div>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
-                <input type="checkbox" id="hasHeader" checked style="accent-color:var(--accent);">
-                <span style="font-size:0.82rem;color:var(--text-secondary);">First Row is Header</span>
-            </label>
-            <div class="option-group">
-                <label>Indent:</label>
-                <select class="select" id="indentSelect">
-                    <option value="2" selected>2 Spaces</option>
-                    <option value="4">4 Spaces</option>
-                </select>
-            </div>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="hasHeader" checked style="accent-color:var(--accent);"><span style="font-size:0.82rem;color:var(--text-secondary);">First Row is Header</span></label>
+            <div class="option-group"><label>Indent:</label><select class="select" id="indentSelect"><option value="2" selected>2 Spaces</option><option value="4">4 Spaces</option></select></div>
             <div class="toolbar-separator"></div>
+            <button class="btn btn-secondary btn-sm" onclick="triggerUpload('csvInput', convertToJSON)">&#128194; Upload</button>
+            <button class="btn btn-secondary btn-sm" onclick="loadSample()">Sample</button>
             <button class="btn btn-secondary btn-sm" onclick="copyJSON()">&#128203; Copy</button>
             <button class="btn btn-secondary btn-sm" onclick="downloadJSON()">&#11015; Download</button>
             <button class="btn btn-danger btn-sm" onclick="clearAll()">&#128465; Clear</button>
         </div>
 
-        <div class="drop-zone" id="dropZone">
-            <div class="drop-icon">&#128194;</div>
-            <div class="drop-text">Drop a CSV file here or <span>click to upload</span></div>
+        <div class="tabs">
+            <button class="tab active" data-tab="input" onclick="switchTab('input')">CSV Input</button>
+            <button class="tab" data-tab="output" onclick="switchTab('output')">JSON Output</button>
         </div>
 
-        <div class="editor-layout">
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <span class="panel-title">CSV Input</span>
-                    <button class="btn btn-secondary btn-sm" onclick="loadSample()">Sample</button>
-                </div>
-                <textarea class="editor-area" id="csvInput" placeholder='Paste CSV data here...\n\nExample:\nname,age,city\nAlice,28,Seoul\nBob,35,Busan' spellcheck="false"></textarea>
+        <div class="tab-body">
+            <div class="tab-panel active" id="panel-input">
+                <textarea class="editor-area" id="csvInput" placeholder="Paste CSV data here..." spellcheck="false"></textarea>
             </div>
-
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <span class="panel-title">JSON Output</span>
-                </div>
-                <div class="output-area" id="jsonOutput">
-                    <div style="color:var(--text-muted);text-align:center;padding-top:120px;">
-                        <div style="font-size:3rem;margin-bottom:12px;">[ ]</div>
-                        <p>JSON output will appear here</p>
-                    </div>
-                </div>
+            <div class="tab-panel" id="panel-output">
+                <div class="output-area" id="jsonOutput"><div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">[ ]</div><p>JSON output will appear here</p></div></div>
             </div>
         </div>
 
-        <div id="tablePreview" style="display:none;margin-top:16px;">
-            <div class="panel-header" style="border-radius:var(--radius) var(--radius) 0 0;">
-                <span class="panel-title">Table Preview</span>
-                <span style="font-size:0.75rem;color:var(--text-muted);" id="rowCount"></span>
-            </div>
-            <div style="overflow-x:auto;border:1px solid var(--border-color);border-top:none;border-radius:0 0 var(--radius) var(--radius);">
-                <table class="data-table" id="previewTable"></table>
-            </div>
-        </div>
-
-        <div class="status-bar">
-            <div class="status-item">
-                <div class="status-dot neutral" id="statusDot"></div>
-                <span id="statusText">Ready</span>
-            </div>
-        </div>
+        <div class="status-bar"><div class="status-item"><div class="status-dot neutral" id="statusDot"></div><span id="statusText">Ready</span></div></div>
     </main>
 
     <script>document.write(getFooterHTML());</script>
 
     <script>
-        const csvInput = document.getElementById('csvInput');
-        const jsonOutput = document.getElementById('jsonOutput');
         let jsonResult = '';
-
-        setupDropZone(document.getElementById('dropZone'), csvInput, () => convertToJSON());
+        setupTextareaDrop('csvInput', convertToJSON);
 
         function convertToJSON() {
-            const text = csvInput.value.trim();
-            if (!text) { setStatus('Please enter CSV data', 'invalid'); return; }
-
-            const hasHeader = document.getElementById('hasHeader').checked;
-            const indent = parseInt(document.getElementById('indentSelect').value);
-
-            const parsed = Papa.parse(text, {
-                header: hasHeader,
-                skipEmptyLines: true,
-                dynamicTyping: true
-            });
-
-            if (parsed.errors.length > 0) {
-                setStatus(`Parse error: ${parsed.errors[0].message}`, 'invalid');
-            }
-
+            const text = document.getElementById('csvInput').value.trim();
+            if (!text) { setStatus('Please enter CSV', 'invalid'); return; }
+            const parsed = Papa.parse(text, { header: document.getElementById('hasHeader').checked, skipEmptyLines: true, dynamicTyping: true });
             const data = parsed.data;
-            jsonResult = JSON.stringify(data, null, indent);
-            jsonOutput.innerHTML = `<div class="code-view">${syntaxHighlight(jsonResult)}</div>`;
-
-            // Table preview
-            if (data.length > 0) {
-                const headers = hasHeader ? Object.keys(data[0]) : Object.keys(data[0]).map((_, i) => `Column ${i + 1}`);
-                const maxRows = Math.min(data.length, 100);
-                let html = '<thead><tr>';
-                headers.forEach(h => { html += `<th>${h}</th>`; });
-                html += '</tr></thead><tbody>';
-                for (let i = 0; i < maxRows; i++) {
-                    html += '<tr>';
-                    headers.forEach((h, j) => {
-                        const val = hasHeader ? data[i][h] : data[i][j];
-                        html += `<td>${val === null || val === undefined ? '' : String(val).replace(/</g, '&lt;')}</td>`;
-                    });
-                    html += '</tr>';
-                }
-                html += '</tbody>';
-                document.getElementById('previewTable').innerHTML = html;
-                document.getElementById('tablePreview').style.display = '';
-                document.getElementById('rowCount').textContent = `${data.length} rows`;
-            }
-
+            jsonResult = JSON.stringify(data, null, parseInt(document.getElementById('indentSelect').value));
+            document.getElementById('jsonOutput').innerHTML = `<div class="code-view">${syntaxHighlight(jsonResult)}</div>`;
             setStatus(`Converted ${data.length} rows to JSON`, 'valid');
+            switchTab('output');
         }
 
         function loadSample() {
-            csvInput.value = `name,age,city,email,active
-Alice,28,Seoul,alice@example.com,true
-Bob,35,Busan,bob@example.com,false
-Charlie,22,Incheon,charlie@example.com,true
-Diana,31,Daegu,diana@example.com,true
-Eve,29,Gwangju,eve@example.com,false`;
+            document.getElementById('csvInput').value = `name,age,city,email,active\nAlice,28,Seoul,alice@example.com,true\nBob,35,Busan,bob@example.com,false\nCharlie,22,Incheon,charlie@example.com,true`;
             convertToJSON();
         }
 
-        function copyJSON() {
-            if (!jsonResult) { showToast('Nothing to copy', 'error'); return; }
-            copyToClipboard(jsonResult);
-        }
-
-        function downloadJSON() {
-            if (!jsonResult) { showToast('Nothing to download', 'error'); return; }
-            downloadFile(jsonResult, 'data.json');
-        }
-
-        function clearAll() {
-            csvInput.value = '';
-            jsonOutput.innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:120px;"><div style="font-size:3rem;margin-bottom:12px;">[ ]</div><p>JSON output will appear here</p></div>`;
-            jsonResult = '';
-            document.getElementById('tablePreview').style.display = 'none';
-            setStatus('Ready', 'neutral');
-        }
-
-        function setStatus(text, type) {
-            document.getElementById('statusText').textContent = text;
-            document.getElementById('statusDot').className = 'status-dot ' + type;
-        }
+        function copyJSON() { if (!jsonResult) { showToast('Nothing to copy', 'error'); return; } copyToClipboard(jsonResult); }
+        function downloadJSON() { if (!jsonResult) { showToast('Nothing to download', 'error'); return; } downloadFile(jsonResult, 'data.json'); }
+        function clearAll() { document.getElementById('csvInput').value = ''; document.getElementById('jsonOutput').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">[ ]</div><p>JSON output will appear here</p></div>`; jsonResult = ''; setStatus('Ready', 'neutral'); switchTab('input'); }
+        function setStatus(t, type) { document.getElementById('statusText').textContent = t; document.getElementById('statusDot').className = 'status-dot ' + type; }
     </script>
 </body>
 </html>

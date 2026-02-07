@@ -452,19 +452,27 @@ function jsonDiff(obj1, obj2, path = '$') {
 
 // ===== Navigation HTML Generator =====
 function getNavHTML(activePage) {
-    const pages = [
+    const mainPages = [
         { url: 'index.html', label: 'Viewer', id: 'viewer' },
         { url: 'json-validator.html', label: 'Validator', id: 'validator' },
         { url: 'json-minify.html', label: 'Minify', id: 'minify' },
-        { url: 'json-to-csv.html', label: 'To CSV', id: 'to-csv' },
-        { url: 'json-to-xml.html', label: 'To XML', id: 'to-xml' },
-        { url: 'json-to-yaml.html', label: 'To YAML', id: 'to-yaml' },
-        { url: 'json-to-typescript.html', label: 'To TypeScript', id: 'to-ts' },
-        { url: 'csv-to-json.html', label: 'CSV To JSON', id: 'csv-to-json' },
         { url: 'json-diff.html', label: 'Diff', id: 'diff' },
     ];
 
-    const links = pages.map(p =>
+    const convertPages = [
+        { url: 'json-to-csv.html', label: 'JSON \u2192 CSV', id: 'to-csv' },
+        { url: 'json-to-xml.html', label: 'JSON \u2192 XML', id: 'to-xml' },
+        { url: 'json-to-yaml.html', label: 'JSON \u2192 YAML', id: 'to-yaml' },
+        { url: 'json-to-typescript.html', label: 'JSON \u2192 TypeScript', id: 'to-ts' },
+        { url: 'csv-to-json.html', label: 'CSV \u2192 JSON', id: 'csv-to-json' },
+    ];
+
+    const mainLinks = mainPages.map(p =>
+        `<a href="${p.url}" class="${p.id === activePage ? 'active' : ''}">${p.label}</a>`
+    ).join('');
+
+    const convertActive = convertPages.some(p => p.id === activePage);
+    const convertLinks = convertPages.map(p =>
         `<a href="${p.url}" class="${p.id === activePage ? 'active' : ''}">${p.label}</a>`
     ).join('');
 
@@ -472,13 +480,27 @@ function getNavHTML(activePage) {
     <nav class="navbar">
         <div class="nav-inner">
             <a href="index.html" class="nav-logo">{} <span>JSON Tools</span></a>
-            <div class="nav-links" id="navLinks">${links}</div>
+            <div class="nav-links" id="navLinks">
+                ${mainLinks}
+                <div class="nav-dropdown" id="convertDropdown">
+                    <button class="nav-dropdown-toggle ${convertActive ? 'has-active' : ''}" onclick="toggleDropdown(event, 'convertDropdown')">
+                        Convert &#9662;
+                    </button>
+                    <div class="nav-dropdown-menu">${convertLinks}</div>
+                </div>
+            </div>
             <div class="nav-right">
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
                 <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
             </div>
         </div>
     </nav>`;
+}
+
+function toggleDropdown(e, id) {
+    e.stopPropagation();
+    const dd = document.getElementById(id);
+    if (dd) dd.classList.toggle('open');
 }
 
 function getFooterHTML() {
@@ -495,7 +517,55 @@ function getFooterHTML() {
     </footer>`;
 }
 
+// ===== Tab Switching =====
+function switchTab(tabId) {
+    // Update tab buttons
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    const activeTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+    if (activeTab) activeTab.classList.add('active');
+
+    // Update tab panels
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const activePanel = document.getElementById('panel-' + tabId);
+    if (activePanel) activePanel.classList.add('active');
+}
+
+// ===== File Upload Button =====
+function triggerUpload(textareaId, callback) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,.csv,.txt,.xml,.yaml,.yml';
+    input.onchange = () => {
+        if (input.files[0]) {
+            const ta = document.getElementById(textareaId);
+            readFile(input.files[0], ta, callback);
+        }
+    };
+    input.click();
+}
+
+// ===== Setup textarea as drop target =====
+function setupTextareaDrop(textareaId, callback) {
+    const ta = document.getElementById(textareaId);
+    if (!ta) return;
+    ta.addEventListener('dragover', e => {
+        e.preventDefault();
+        ta.classList.add('drag-over');
+    });
+    ta.addEventListener('dragleave', () => ta.classList.remove('drag-over'));
+    ta.addEventListener('drop', e => {
+        e.preventDefault();
+        ta.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file) readFile(file, ta, callback);
+    });
+}
+
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    // Close dropdown on outside click
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown.open').forEach(dd => dd.classList.remove('open'));
+    });
 });

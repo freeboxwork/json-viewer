@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON to XML Converter Online - Free JSON to XML Tool</title>
     <meta name="description" content="Convert JSON to XML format online for free. Customize root element name, get formatted XML output with syntax highlighting.">
-    <meta property="og:title" content="JSON to XML Converter Online">
-    <meta property="og:description" content="Convert JSON to well-formatted XML with custom root element names.">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,116 +20,61 @@
         <div class="toolbar">
             <button class="btn btn-primary" onclick="convertToXML()">&#128260; Convert to XML</button>
             <div class="toolbar-separator"></div>
-            <div class="option-group">
-                <label>Root Element:</label>
-                <input type="text" class="input" id="rootName" value="root" style="width:100px;">
-            </div>
+            <div class="option-group"><label>Root Element:</label><input type="text" class="input" id="rootName" value="root" style="width:100px;"></div>
             <div class="toolbar-separator"></div>
+            <button class="btn btn-secondary btn-sm" onclick="triggerUpload('jsonInput', convertToXML)">&#128194; Upload</button>
             <button class="btn btn-secondary btn-sm" onclick="loadSample()">Sample</button>
             <button class="btn btn-secondary btn-sm" onclick="copyXML()">&#128203; Copy</button>
             <button class="btn btn-secondary btn-sm" onclick="downloadXML()">&#11015; Download</button>
             <button class="btn btn-danger btn-sm" onclick="clearAll()">&#128465; Clear</button>
         </div>
 
-        <div class="drop-zone" id="dropZone">
-            <div class="drop-icon">&#128194;</div>
-            <div class="drop-text">Drop a JSON file here or <span>click to upload</span></div>
+        <div class="tabs">
+            <button class="tab active" data-tab="input" onclick="switchTab('input')">JSON Input</button>
+            <button class="tab" data-tab="output" onclick="switchTab('output')">XML Output</button>
         </div>
 
-        <div class="editor-layout">
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <span class="panel-title">JSON Input</span>
-                </div>
+        <div class="tab-body">
+            <div class="tab-panel active" id="panel-input">
                 <textarea class="editor-area" id="jsonInput" placeholder="Paste your JSON here..." spellcheck="false"></textarea>
             </div>
-
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <span class="panel-title">XML Output</span>
-                </div>
-                <div class="output-area" id="xmlOutput">
-                    <div style="color:var(--text-muted);text-align:center;padding-top:120px;">
-                        <div style="font-size:3rem;margin-bottom:12px;">&lt;/&gt;</div>
-                        <p>XML output will appear here</p>
-                    </div>
-                </div>
+            <div class="tab-panel" id="panel-output">
+                <div class="output-area" id="xmlOutput"><div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">&lt;/&gt;</div><p>XML output will appear here</p></div></div>
             </div>
         </div>
 
-        <div class="status-bar">
-            <div class="status-item">
-                <div class="status-dot neutral" id="statusDot"></div>
-                <span id="statusText">Ready</span>
-            </div>
-        </div>
+        <div class="status-bar"><div class="status-item"><div class="status-dot neutral" id="statusDot"></div><span id="statusText">Ready</span></div></div>
     </main>
 
     <script>document.write(getFooterHTML());</script>
 
     <script>
-        const input = document.getElementById('jsonInput');
-        const xmlOutput = document.getElementById('xmlOutput');
         let xmlText = '';
-
-        setupDropZone(document.getElementById('dropZone'), input, () => convertToXML());
+        setupTextareaDrop('jsonInput', convertToXML);
 
         function convertToXML() {
-            const text = input.value.trim();
+            const text = document.getElementById('jsonInput').value.trim();
             if (!text) { setStatus('Please enter JSON', 'invalid'); return; }
-
             const result = parseJSON(text);
             if (!result.success) { setStatus(`Error: ${result.error.message}`, 'invalid'); return; }
-
-            const rootName = document.getElementById('rootName').value.trim() || 'root';
-            xmlText = jsonToXml(result.data, rootName);
-
-            // Syntax highlight XML
-            const highlighted = xmlText
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
+            xmlText = jsonToXml(result.data, document.getElementById('rootName').value.trim() || 'root');
+            const highlighted = xmlText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
                 .replace(/(&lt;\/?)([\w.-]+)(&gt;)/g, '$1<span style="color:var(--json-key);">$2</span>$3')
                 .replace(/(&lt;\?)(.*?)(\?&gt;)/g, '<span style="color:var(--text-muted);">$1$2$3</span>');
-
-            xmlOutput.innerHTML = `<div class="code-view">${highlighted}</div>`;
+            document.getElementById('xmlOutput').innerHTML = `<div class="code-view">${highlighted}</div>`;
             setStatus(`Converted to XML (${formatBytes(new Blob([xmlText]).size)})`, 'valid');
+            switchTab('output');
         }
 
         function loadSample() {
-            input.value = JSON.stringify({
-                "bookstore": {
-                    "book": [
-                        { "title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "year": 1925, "price": 10.99 },
-                        { "title": "1984", "author": "George Orwell", "year": 1949, "price": 8.99 },
-                        { "title": "Brave New World", "author": "Aldous Huxley", "year": 1932, "price": 12.50 }
-                    ]
-                }
-            }, null, 2);
+            document.getElementById('jsonInput').value = JSON.stringify({"bookstore":{"book":[{"title":"The Great Gatsby","author":"F. Scott Fitzgerald","year":1925,"price":10.99},{"title":"1984","author":"George Orwell","year":1949,"price":8.99}]}}, null, 2);
             convertToXML();
         }
 
-        function copyXML() {
-            if (!xmlText) { showToast('Nothing to copy', 'error'); return; }
-            copyToClipboard(xmlText);
-        }
-
-        function downloadXML() {
-            if (!xmlText) { showToast('Nothing to download', 'error'); return; }
-            downloadFile(xmlText, 'data.xml', 'application/xml');
-        }
-
-        function clearAll() {
-            input.value = '';
-            xmlOutput.innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:120px;"><div style="font-size:3rem;margin-bottom:12px;">&lt;/&gt;</div><p>XML output will appear here</p></div>`;
-            xmlText = '';
-            setStatus('Ready', 'neutral');
-        }
-
-        function setStatus(text, type) {
-            document.getElementById('statusText').textContent = text;
-            document.getElementById('statusDot').className = 'status-dot ' + type;
-        }
+        function copyXML() { if (!xmlText) { showToast('Nothing to copy', 'error'); return; } copyToClipboard(xmlText); }
+        function downloadXML() { if (!xmlText) { showToast('Nothing to download', 'error'); return; } downloadFile(xmlText, 'data.xml', 'application/xml'); }
+        function clearAll() { document.getElementById('jsonInput').value = ''; document.getElementById('xmlOutput').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">&lt;/&gt;</div><p>XML output will appear here</p></div>`; xmlText = ''; setStatus('Ready', 'neutral'); switchTab('input'); }
+        function setStatus(t, type) { document.getElementById('statusText').textContent = t; document.getElementById('statusDot').className = 'status-dot ' + type; }
     </script>
 </body>
 </html>

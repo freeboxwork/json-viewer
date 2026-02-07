@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Minify Online - Compress & Minify JSON</title>
     <meta name="description" content="Free online JSON minifier. Compress JSON by removing whitespace, newlines, and indentation. See size reduction percentage.">
-    <meta property="og:title" content="JSON Minify Online">
-    <meta property="og:description" content="Compress JSON by removing all whitespace. See size savings instantly.">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,55 +21,34 @@
             <button class="btn btn-primary" onclick="minifyJSON()">&#128220; Minify</button>
             <button class="btn btn-secondary" onclick="beautifyJSON()">&#9998; Beautify</button>
             <div class="toolbar-separator"></div>
+            <button class="btn btn-secondary btn-sm" onclick="triggerUpload('jsonInput', minifyJSON)">&#128194; Upload</button>
             <button class="btn btn-secondary btn-sm" onclick="copyMinified()">&#128203; Copy</button>
             <button class="btn btn-secondary btn-sm" onclick="downloadMinified()">&#11015; Download</button>
             <button class="btn btn-danger btn-sm" onclick="clearMinify()">&#128465; Clear</button>
         </div>
 
-        <div class="drop-zone" id="dropZone">
-            <div class="drop-icon">&#128194;</div>
-            <div class="drop-text">Drop a JSON file here or <span>click to upload</span></div>
+        <div class="tabs">
+            <button class="tab active" data-tab="input" onclick="switchTab('input')">Input</button>
+            <button class="tab" data-tab="output" onclick="switchTab('output')">Minified Output</button>
         </div>
 
-        <div class="editor-layout">
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <span class="panel-title">Input JSON</span>
-                    <span style="font-size:0.75rem;color:var(--text-muted);" id="inputSize"></span>
-                </div>
+        <div class="tab-body">
+            <div class="tab-panel active" id="panel-input">
                 <textarea class="editor-area" id="jsonInput" placeholder="Paste your JSON here to minify..." spellcheck="false"></textarea>
             </div>
-
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <span class="panel-title">Minified Output</span>
-                    <span style="font-size:0.75rem;color:var(--text-muted);" id="outputSize"></span>
-                </div>
+            <div class="tab-panel" id="panel-output">
                 <textarea class="editor-area" id="jsonOutput" placeholder="Minified JSON will appear here..." spellcheck="false" readonly style="cursor:default;"></textarea>
             </div>
         </div>
 
-        <!-- Size Comparison -->
         <div class="status-bar" id="sizeBar" style="display:none;">
-            <div class="status-item">
-                <span style="font-weight:700;color:var(--text-secondary);">Original:</span>
-                <span id="origSize">-</span>
-            </div>
-            <div class="status-item">
-                <span style="font-weight:700;color:var(--text-secondary);">Minified:</span>
-                <span id="minSize">-</span>
-            </div>
-            <div class="status-item">
-                <span style="font-weight:700;color:var(--success);">Saved:</span>
-                <span id="savedSize" style="color:var(--success);font-weight:700;">-</span>
-            </div>
+            <div class="status-item"><span style="font-weight:700;color:var(--text-secondary);">Original:</span> <span id="origSize">-</span></div>
+            <div class="status-item"><span style="font-weight:700;color:var(--text-secondary);">Minified:</span> <span id="minSize">-</span></div>
+            <div class="status-item"><span style="font-weight:700;color:var(--success);">Saved:</span> <span id="savedSize" style="color:var(--success);font-weight:700;">-</span></div>
         </div>
 
         <div class="status-bar">
-            <div class="status-item">
-                <div class="status-dot neutral" id="statusDot"></div>
-                <span id="statusText">Ready</span>
-            </div>
+            <div class="status-item"><div class="status-dot neutral" id="statusDot"></div><span id="statusText">Ready</span></div>
         </div>
     </main>
 
@@ -82,91 +59,41 @@
         const output = document.getElementById('jsonOutput');
         let minifiedText = '';
 
-        setupDropZone(document.getElementById('dropZone'), input, () => minifyJSON());
-
-        input.addEventListener('input', () => {
-            const size = new Blob([input.value]).size;
-            document.getElementById('inputSize').textContent = input.value ? formatBytes(size) : '';
-        });
+        setupTextareaDrop('jsonInput', minifyJSON);
 
         function minifyJSON() {
             const text = input.value.trim();
-            if (!text) {
-                setStatus('Please enter JSON', 'invalid');
-                return;
-            }
-
+            if (!text) { setStatus('Please enter JSON', 'invalid'); return; }
             const result = parseJSON(text);
-            if (!result.success) {
-                setStatus(`Error: ${result.error.message}`, 'invalid');
-                output.value = '';
-                return;
-            }
-
+            if (!result.success) { setStatus(`Error: ${result.error.message}`, 'invalid'); output.value = ''; return; }
             minifiedText = JSON.stringify(result.data);
             output.value = minifiedText;
-
             const origBytes = new Blob([text]).size;
             const minBytes = new Blob([minifiedText]).size;
             const saved = origBytes - minBytes;
             const percent = origBytes > 0 ? ((saved / origBytes) * 100).toFixed(1) : 0;
-
             document.getElementById('sizeBar').style.display = '';
             document.getElementById('origSize').textContent = formatBytes(origBytes);
             document.getElementById('minSize').textContent = formatBytes(minBytes);
             document.getElementById('savedSize').textContent = `${formatBytes(saved)} (${percent}%)`;
-            document.getElementById('outputSize').textContent = formatBytes(minBytes);
-
-            setStatus(`Minified successfully \u2014 ${percent}% reduction`, 'valid');
+            setStatus(`Minified \u2014 ${percent}% reduction`, 'valid');
+            switchTab('output');
         }
 
         function beautifyJSON() {
             const text = input.value.trim();
             if (!text) return;
-
             const result = parseJSON(text);
-            if (!result.success) {
-                setStatus(`Error: ${result.error.message}`, 'invalid');
-                return;
-            }
-
-            const beautified = JSON.stringify(result.data, null, 2);
-            input.value = beautified;
-            output.value = '';
+            if (!result.success) { setStatus(`Error: ${result.error.message}`, 'invalid'); return; }
+            input.value = JSON.stringify(result.data, null, 2);
             document.getElementById('sizeBar').style.display = 'none';
             setStatus('Beautified', 'valid');
         }
 
-        function copyMinified() {
-            if (!minifiedText) {
-                showToast('Nothing to copy', 'error');
-                return;
-            }
-            copyToClipboard(minifiedText);
-        }
-
-        function downloadMinified() {
-            if (!minifiedText) {
-                showToast('Nothing to download', 'error');
-                return;
-            }
-            downloadFile(minifiedText, 'minified.json');
-        }
-
-        function clearMinify() {
-            input.value = '';
-            output.value = '';
-            minifiedText = '';
-            document.getElementById('sizeBar').style.display = 'none';
-            document.getElementById('inputSize').textContent = '';
-            document.getElementById('outputSize').textContent = '';
-            setStatus('Ready', 'neutral');
-        }
-
-        function setStatus(text, type) {
-            document.getElementById('statusText').textContent = text;
-            document.getElementById('statusDot').className = 'status-dot ' + type;
-        }
+        function copyMinified() { if (!minifiedText) { showToast('Nothing to copy', 'error'); return; } copyToClipboard(minifiedText); }
+        function downloadMinified() { if (!minifiedText) { showToast('Nothing to download', 'error'); return; } downloadFile(minifiedText, 'minified.json'); }
+        function clearMinify() { input.value = ''; output.value = ''; minifiedText = ''; document.getElementById('sizeBar').style.display = 'none'; setStatus('Ready', 'neutral'); switchTab('input'); }
+        function setStatus(text, type) { document.getElementById('statusText').textContent = text; document.getElementById('statusDot').className = 'status-dot ' + type; }
     </script>
 </body>
 </html>

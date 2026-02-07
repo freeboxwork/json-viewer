@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON to TypeScript Interface Converter - Free Online Tool</title>
     <meta name="description" content="Generate TypeScript interfaces from JSON data automatically. Convert JSON objects to TypeScript types with nested interface support.">
-    <meta property="og:title" content="JSON to TypeScript Interface Converter">
-    <meta property="og:description" content="Auto-generate TypeScript interfaces from JSON data with nested type support.">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,130 +20,63 @@
         <div class="toolbar">
             <button class="btn btn-primary" onclick="convertToTS()">&#128260; Generate Interfaces</button>
             <div class="toolbar-separator"></div>
-            <div class="option-group">
-                <label>Root Interface:</label>
-                <input type="text" class="input" id="interfaceName" value="Root" style="width:120px;">
-            </div>
+            <div class="option-group"><label>Root Interface:</label><input type="text" class="input" id="interfaceName" value="Root" style="width:120px;"></div>
             <div class="toolbar-separator"></div>
+            <button class="btn btn-secondary btn-sm" onclick="triggerUpload('jsonInput', convertToTS)">&#128194; Upload</button>
             <button class="btn btn-secondary btn-sm" onclick="loadSample()">Sample</button>
             <button class="btn btn-secondary btn-sm" onclick="copyTS()">&#128203; Copy</button>
             <button class="btn btn-secondary btn-sm" onclick="downloadTS()">&#11015; Download</button>
             <button class="btn btn-danger btn-sm" onclick="clearAll()">&#128465; Clear</button>
         </div>
 
-        <div class="drop-zone" id="dropZone">
-            <div class="drop-icon">&#128194;</div>
-            <div class="drop-text">Drop a JSON file here or <span>click to upload</span></div>
+        <div class="tabs">
+            <button class="tab active" data-tab="input" onclick="switchTab('input')">JSON Input</button>
+            <button class="tab" data-tab="output" onclick="switchTab('output')">TypeScript Output</button>
         </div>
 
-        <div class="editor-layout">
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <span class="panel-title">JSON Input</span>
-                </div>
+        <div class="tab-body">
+            <div class="tab-panel active" id="panel-input">
                 <textarea class="editor-area" id="jsonInput" placeholder="Paste your JSON here..." spellcheck="false"></textarea>
             </div>
-
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <span class="panel-title">TypeScript Output</span>
-                </div>
-                <div class="output-area" id="tsOutput">
-                    <div style="color:var(--text-muted);text-align:center;padding-top:120px;">
-                        <div style="font-size:3rem;margin-bottom:12px;">TS</div>
-                        <p>TypeScript interfaces will appear here</p>
-                    </div>
-                </div>
+            <div class="tab-panel" id="panel-output">
+                <div class="output-area" id="tsOutput"><div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">TS</div><p>TypeScript interfaces will appear here</p></div></div>
             </div>
         </div>
 
-        <div class="status-bar">
-            <div class="status-item">
-                <div class="status-dot neutral" id="statusDot"></div>
-                <span id="statusText">Ready</span>
-            </div>
-        </div>
+        <div class="status-bar"><div class="status-item"><div class="status-dot neutral" id="statusDot"></div><span id="statusText">Ready</span></div></div>
     </main>
 
     <script>document.write(getFooterHTML());</script>
 
     <script>
-        const input = document.getElementById('jsonInput');
-        const tsOutput = document.getElementById('tsOutput');
         let tsText = '';
-
-        setupDropZone(document.getElementById('dropZone'), input, () => convertToTS());
+        setupTextareaDrop('jsonInput', convertToTS);
 
         function convertToTS() {
-            const text = input.value.trim();
+            const text = document.getElementById('jsonInput').value.trim();
             if (!text) { setStatus('Please enter JSON', 'invalid'); return; }
-
             const result = parseJSON(text);
             if (!result.success) { setStatus(`Error: ${result.error.message}`, 'invalid'); return; }
-
-            const name = document.getElementById('interfaceName').value.trim() || 'Root';
-            tsText = jsonToTypeScript(result.data, name);
-
-            // Syntax highlight TypeScript
-            const highlighted = tsText
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
+            tsText = jsonToTypeScript(result.data, document.getElementById('interfaceName').value.trim() || 'Root');
+            const highlighted = tsText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
                 .replace(/\b(interface|type)\b/g, '<span style="color:var(--json-boolean);">$1</span>')
                 .replace(/\b(string|number|boolean|null|any|undefined)\b/g, '<span style="color:var(--json-key);">$1</span>')
-                .replace(/(\w+)(\??:\s)/g, '<span style="color:var(--json-string);">$1</span>$2')
-                .replace(/\b([A-Z][A-Za-z0-9]*)\b(?=\s*\{|\[\]|;|\s*\|)/g, '<span style="color:var(--json-number);">$1</span>');
-
-            tsOutput.innerHTML = `<div class="code-view">${highlighted}</div>`;
-
-            const interfaceCount = (tsText.match(/interface /g) || []).length;
-            const typeCount = (tsText.match(/type /g) || []).length;
-            setStatus(`Generated ${interfaceCount} interface(s), ${typeCount} type(s)`, 'valid');
+                .replace(/(\w+)(\??:\s)/g, '<span style="color:var(--json-string);">$1</span>$2');
+            document.getElementById('tsOutput').innerHTML = `<div class="code-view">${highlighted}</div>`;
+            const ic = (tsText.match(/interface /g) || []).length;
+            setStatus(`Generated ${ic} interface(s)`, 'valid');
+            switchTab('output');
         }
 
         function loadSample() {
-            input.value = JSON.stringify({
-                "id": 1,
-                "name": "John Doe",
-                "email": "john@example.com",
-                "isActive": true,
-                "scores": [95, 87, 92],
-                "address": {
-                    "street": "123 Main St",
-                    "city": "Seoul",
-                    "zipCode": "12345",
-                    "coordinates": { "lat": 37.5665, "lng": 126.9780 }
-                },
-                "tags": [
-                    { "id": 1, "name": "developer", "color": "#3b82f6" },
-                    { "id": 2, "name": "designer", "color": "#22c55e" }
-                ],
-                "metadata": null
-            }, null, 2);
+            document.getElementById('jsonInput').value = JSON.stringify({"id":1,"name":"John","email":"john@example.com","isActive":true,"scores":[95,87],"address":{"street":"123 Main St","city":"Seoul","coordinates":{"lat":37.5665,"lng":126.978}},"tags":[{"id":1,"name":"developer"}],"metadata":null}, null, 2);
             convertToTS();
         }
 
-        function copyTS() {
-            if (!tsText) { showToast('Nothing to copy', 'error'); return; }
-            copyToClipboard(tsText);
-        }
-
-        function downloadTS() {
-            if (!tsText) { showToast('Nothing to download', 'error'); return; }
-            downloadFile(tsText, 'types.ts', 'text/typescript');
-        }
-
-        function clearAll() {
-            input.value = '';
-            tsOutput.innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:120px;"><div style="font-size:3rem;margin-bottom:12px;">TS</div><p>TypeScript interfaces will appear here</p></div>`;
-            tsText = '';
-            setStatus('Ready', 'neutral');
-        }
-
-        function setStatus(text, type) {
-            document.getElementById('statusText').textContent = text;
-            document.getElementById('statusDot').className = 'status-dot ' + type;
-        }
+        function copyTS() { if (!tsText) { showToast('Nothing to copy', 'error'); return; } copyToClipboard(tsText); }
+        function downloadTS() { if (!tsText) { showToast('Nothing to download', 'error'); return; } downloadFile(tsText, 'types.ts', 'text/typescript'); }
+        function clearAll() { document.getElementById('jsonInput').value = ''; document.getElementById('tsOutput').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">TS</div><p>TypeScript interfaces will appear here</p></div>`; tsText = ''; setStatus('Ready', 'neutral'); switchTab('input'); }
+        function setStatus(t, type) { document.getElementById('statusText').textContent = t; document.getElementById('statusDot').className = 'status-dot ' + type; }
     </script>
 </body>
 </html>

@@ -24,7 +24,6 @@
         <div class="toolbar">
             <div class="toolbar-group">
                 <button class="btn btn-primary" onclick="formatJSON()">&#9998; Format</button>
-                <button class="btn btn-secondary" onclick="viewTree()">&#127795; Tree View</button>
             </div>
             <div class="toolbar-separator"></div>
             <div class="toolbar-group">
@@ -39,6 +38,7 @@
             </div>
             <div class="toolbar-separator"></div>
             <div class="toolbar-group">
+                <button class="btn btn-secondary btn-sm" onclick="triggerUpload('jsonInput', formatJSON)">&#128194; Upload</button>
                 <button class="btn btn-secondary btn-sm" onclick="loadSample()">Sample</button>
                 <button class="btn btn-secondary btn-sm" onclick="copyOutput()">&#128203; Copy</button>
                 <button class="btn btn-secondary btn-sm" onclick="downloadOutput()">&#11015; Download</button>
@@ -46,39 +46,53 @@
             </div>
         </div>
 
-        <!-- Drop Zone -->
-        <div class="drop-zone" id="dropZone">
-            <div class="drop-icon">&#128194;</div>
-            <div class="drop-text">Drop a JSON file here or <span>click to upload</span></div>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="input" onclick="switchTab('input')">Input</button>
+            <button class="tab" data-tab="formatted" onclick="switchTab('formatted')">Formatted</button>
+            <button class="tab" data-tab="tree" onclick="switchTab('tree')">Tree View</button>
         </div>
 
-        <!-- Editor Layout -->
-        <div class="editor-layout">
-            <!-- Input Panel -->
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <span class="panel-title">Input JSON</span>
-                    <span style="font-size:0.75rem;color:var(--text-muted);" id="inputSize"></span>
-                </div>
-                <textarea class="editor-area" id="jsonInput" placeholder='Paste your JSON here...\n\nExample:\n{\n  "name": "John",\n  "age": 30\n}' spellcheck="false"></textarea>
+        <!-- Tab Body -->
+        <div class="tab-body">
+            <!-- Input Tab -->
+            <div class="tab-panel active" id="panel-input">
+                <textarea class="editor-area" id="jsonInput" placeholder="Paste your JSON here...
+
+Drag & drop a .json file, or click Upload above.
+
+Keyboard shortcut: Ctrl+Enter to format." spellcheck="false"></textarea>
             </div>
 
-            <!-- Output Panel -->
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <span class="panel-title" id="outputTitle">Output</span>
-                    <div class="panel-actions">
-                        <div class="search-box" style="width:180px;">
+            <!-- Formatted Tab -->
+            <div class="tab-panel" id="panel-formatted">
+                <div class="output-area" id="formattedOutput">
+                    <div style="color:var(--text-muted);text-align:center;padding-top:140px;">
+                        <div style="font-size:3rem;margin-bottom:12px;">{ }</div>
+                        <p>Paste JSON in the Input tab, then click Format</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tree View Tab -->
+            <div class="tab-panel" id="panel-tree">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border-color);flex-wrap:wrap;gap:8px;">
+                    <div class="toolbar-group">
+                        <button class="btn btn-secondary btn-sm" onclick="toggleAllNodes(true)">Expand All</button>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleAllNodes(false)">Collapse All</button>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div class="search-box" style="width:220px;">
                             <span class="search-icon">&#128269;</span>
-                            <input type="text" placeholder="Search keys/values..." id="treeSearch" oninput="onSearch(this.value)">
+                            <input type="text" placeholder="Search keys / values..." id="treeSearch" oninput="onSearch(this.value)">
                         </div>
                         <span class="search-count" id="searchCount"></span>
                     </div>
                 </div>
-                <div class="output-area" id="outputArea">
-                    <div style="color:var(--text-muted);text-align:center;padding-top:120px;">
-                        <div style="font-size:3rem;margin-bottom:12px;">{ }</div>
-                        <p>Formatted output will appear here</p>
+                <div class="output-area" id="treeOutput" style="border-radius:0 0 var(--radius) var(--radius);">
+                    <div style="color:var(--text-muted);text-align:center;padding-top:140px;">
+                        <div style="font-size:3rem;margin-bottom:12px;">&#127795;</div>
+                        <p>Paste JSON in the Input tab, then click Format to see the tree</p>
                     </div>
                 </div>
             </div>
@@ -90,14 +104,7 @@
                 <div class="status-dot neutral" id="statusDot"></div>
                 <span id="statusText">Ready</span>
             </div>
-        </div>
-
-        <!-- Tree Controls (hidden by default) -->
-        <div id="treeControls" style="display:none;margin-top:12px;">
-            <div class="toolbar-group">
-                <button class="btn btn-secondary btn-sm" onclick="toggleAllNodes(true)">&#128194; Expand All</button>
-                <button class="btn btn-secondary btn-sm" onclick="toggleAllNodes(false)">&#128193; Collapse All</button>
-            </div>
+            <div style="margin-left:auto;font-size:0.78rem;color:var(--text-muted);" id="inputSize"></div>
         </div>
     </main>
 
@@ -105,27 +112,15 @@
 
     <script>
         const input = document.getElementById('jsonInput');
-        const output = document.getElementById('outputArea');
-        let currentMode = 'code'; // 'code' or 'tree'
         let parsedData = null;
+
+        // Setup textarea as drop target
+        setupTextareaDrop('jsonInput', formatJSON);
 
         // Update input size indicator
         input.addEventListener('input', () => {
             const size = new Blob([input.value]).size;
             document.getElementById('inputSize').textContent = input.value ? formatBytes(size) : '';
-        });
-
-        // Setup drop zone
-        setupDropZone(document.getElementById('dropZone'), input, () => {
-            formatJSON();
-        });
-
-        // Also handle drop on textarea
-        input.addEventListener('dragover', e => e.preventDefault());
-        input.addEventListener('drop', e => {
-            e.preventDefault();
-            const file = e.dataTransfer.files[0];
-            if (file) readFile(file, input, () => formatJSON());
         });
 
         function getIndent() {
@@ -143,7 +138,8 @@
             const result = parseJSON(text);
             if (!result.success) {
                 showStatus(`Error: ${result.error.message}${result.error.line ? ` (line ${result.error.line}, col ${result.error.col})` : ''}`, 'invalid');
-                output.innerHTML = `<div style="color:var(--error);padding:20px;"><strong>Invalid JSON</strong><br><br>${result.error.message}${result.error.line ? `<br>Line: ${result.error.line}, Column: ${result.error.col}` : ''}</div>`;
+                document.getElementById('formattedOutput').innerHTML = `<div style="color:var(--error);padding:20px;"><strong>Invalid JSON</strong><br><br>${result.error.message}${result.error.line ? `<br>Line: ${result.error.line}, Column: ${result.error.col}` : ''}</div>`;
+                switchTab('formatted');
                 return;
             }
 
@@ -152,41 +148,20 @@
             const formatted = JSON.stringify(parsedData, null, indent);
             input.value = formatted;
 
-            // Show syntax highlighted output
-            currentMode = 'code';
-            output.innerHTML = `<div class="code-view">${syntaxHighlight(formatted)}</div>`;
-            document.getElementById('outputTitle').textContent = 'Formatted Output';
-            document.getElementById('treeControls').style.display = 'none';
+            // Update formatted view
+            document.getElementById('formattedOutput').innerHTML = `<div class="code-view">${syntaxHighlight(formatted)}</div>`;
+
+            // Update tree view
+            document.getElementById('treeOutput').innerHTML = `<div class="tree-view">${buildTreeHTML(parsedData)}</div>`;
+
+            // Switch to formatted tab
+            switchTab('formatted');
 
             const stats = getJSONStats(parsedData);
             showStatus(`Valid JSON \u2014 ${stats.keys} keys, ${stats.objects} objects, ${stats.arrays} arrays, depth ${stats.depth}`, 'valid');
 
-            // Update input size
             const size = new Blob([formatted]).size;
             document.getElementById('inputSize').textContent = formatBytes(size);
-        }
-
-        function viewTree() {
-            const text = input.value.trim();
-            if (!text) {
-                showStatus('Please enter JSON', 'invalid');
-                return;
-            }
-
-            const result = parseJSON(text);
-            if (!result.success) {
-                showStatus(`Error: ${result.error.message}`, 'invalid');
-                return;
-            }
-
-            parsedData = result.data;
-            currentMode = 'tree';
-            output.innerHTML = `<div class="tree-view" id="treeOutput">${buildTreeHTML(parsedData)}</div>`;
-            document.getElementById('outputTitle').textContent = 'Tree View';
-            document.getElementById('treeControls').style.display = '';
-
-            const stats = getJSONStats(parsedData);
-            showStatus(`Valid JSON \u2014 ${stats.keys} keys, ${stats.objects} objects, ${stats.arrays} arrays, depth ${stats.depth}`, 'valid');
         }
 
         function onSearch(keyword) {
@@ -195,33 +170,26 @@
         }
 
         function copyOutput() {
-            if (!parsedData) {
-                showToast('Nothing to copy', 'error');
-                return;
-            }
+            if (!parsedData) { showToast('Nothing to copy', 'error'); return; }
             const indent = getIndent();
             copyToClipboard(JSON.stringify(parsedData, null, indent));
         }
 
         function downloadOutput() {
-            if (!parsedData) {
-                showToast('Nothing to download', 'error');
-                return;
-            }
+            if (!parsedData) { showToast('Nothing to download', 'error'); return; }
             const indent = getIndent();
             downloadFile(JSON.stringify(parsedData, null, indent), 'formatted.json');
         }
 
         function clearAll() {
             input.value = '';
-            output.innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:120px;"><div style="font-size:3rem;margin-bottom:12px;">{ }</div><p>Formatted output will appear here</p></div>`;
+            document.getElementById('formattedOutput').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">{ }</div><p>Paste JSON in the Input tab, then click Format</p></div>`;
+            document.getElementById('treeOutput').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding-top:140px;"><div style="font-size:3rem;margin-bottom:12px;">&#127795;</div><p>Paste JSON in the Input tab, then click Format to see the tree</p></div>`;
             parsedData = null;
-            currentMode = 'code';
             document.getElementById('inputSize').textContent = '';
-            document.getElementById('treeControls').style.display = 'none';
-            document.getElementById('outputTitle').textContent = 'Output';
             document.getElementById('searchCount').textContent = '';
             showStatus('Ready', 'neutral');
+            switchTab('input');
         }
 
         function loadSample() {
@@ -235,12 +203,7 @@
                     "email": "dev@example.com",
                     "website": "https://example.com"
                 },
-                "stats": {
-                    "users": 15000,
-                    "rating": 4.8,
-                    "isOpen": true,
-                    "lastUpdate": null
-                },
+                "stats": { "users": 15000, "rating": 4.8, "isOpen": true, "lastUpdate": null },
                 "tags": [
                     { "id": 1, "name": "json", "color": "#3b82f6" },
                     { "id": 2, "name": "tools", "color": "#22c55e" },
@@ -253,8 +216,7 @@
 
         function showStatus(text, type) {
             document.getElementById('statusText').textContent = text;
-            const dot = document.getElementById('statusDot');
-            dot.className = 'status-dot ' + type;
+            document.getElementById('statusDot').className = 'status-dot ' + type;
         }
 
         // Keyboard shortcuts

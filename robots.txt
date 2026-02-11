@@ -4,7 +4,6 @@
 # Allow all search engine crawlers
 User-agent: *
 Allow: /
-Disallow: /assets/
 
 # Google
 User-agent: Googlebot
